@@ -1,0 +1,207 @@
+<script type="text/javascript">
+	$(function(){
+		function populatingCatalogue(catalogue) {
+			$(".content_section").each(function(){
+					var section = {
+						'section': $(this).data('section'),
+						'produits': []
+					};
+					$(this).find(".imgPetite").each(function(){
+						var prd = {
+							'id': $(this).data('id'),
+							'icone': $(this).attr('src')
+						}
+						section.produits.push(prd);
+						ttl ++;
+					});
+					catalogue.sections.push(section);
+			});
+		}
+		var currentCatalogue = "";
+		<% if (id != "") {%>
+		 currentCatalogue = '<%=id%>';
+		 $.get("/edition/getFormatedCatalogue/<%=id%>", {}, function(datas) {
+		 	for(var c = 0; c < datas.length; c++) {
+		 		console.log("sect : ", datas[c].section);
+		 		var section = datas[c].section;
+		 		var all_images = "";
+		 		for (var i = 0 ; i < datas[c].prds.length; i++) {
+		 			all_images += "<img class='imgPetite' src='" + datas[c].prds[i].icone + "' data-id='" + datas[c].prds[i].id + "'></img>";
+		 		}
+
+		 		var ajout = "<h3 id='" + section + "'>" + section + "</h3><div class='content_section' data-section='" + section + "'>" +  all_images  + "</div>";
+		  		$("#accordion").append(ajout);
+			  	$("#accordion").accordion("refresh");
+		 	}
+		 });
+
+		<% } %>
+		
+		$("#frmEditionSection").hide();
+		var selProd = 0;
+ 		function fillThumb(datas) {
+ 			var max = datas.data.length;
+ 			var compteur = 0;
+			var slideH = "";
+			console.log("max : ", max);
+			for(var c=0; c<6;c++) {
+				slideH += "<tr>";
+				for (var cc = 0; cc < 5; cc++) {
+					if(compteur >= max) {
+						slideH += "<td></td>";
+					} else {
+						rayon = datas.data[compteur][2];
+						slideH += '<td><div class="pellicule"><a href="#" class="chkImg" data-id="' + datas.data[compteur][0]  + '" data-rayon="' + rayon + '" data-ico="' + datas.data[compteur][10] + '"><img src="/images/images_rayons/' + rayon + '/' + datas.data[compteur][10] + '" /></a></div></td>';
+					}
+					compteur ++;
+				}
+				slideH += "</tr>";
+			}
+			$("#tblThumb").html(slideH);
+ 		}
+		function imagesSlide(rayon) {
+			///produits/getAll/:type
+			$.get("/produits/getAll/" + rayon,{},function(datas) {
+				
+				fillThumb(datas);
+			});
+			
+		}
+		$("#search").keypress(function(){
+			if($(this).val().length > 2) {
+				$.get("/produits/getAllCrit/" + $(this).val(),{},function(datas) {
+					
+					fillThumb(datas);
+				});
+			}
+		});
+		$.get('/produits/getTypes/',{}, function(datas){
+			var selectProduits = "<select id='slRayon'>"; 
+ 	        if(datas.err == null) {
+	          var types = datas.data;
+	          for (var cc = 0; cc < types.length; cc++) {
+	            var attrS ="";
+	            //if(selectedType == types[cc].id) attrS = "selected"; 
+	            selectProduits += "<option value='" + types[cc].id + "' " + attrS + " >" + types[cc].nom + "</option>";
+	          }
+	          selectProduits += "</select>";
+	          $('.liRayon').append(selectProduits);
+	          $("#slRayon").change(function() {
+	          		imagesSlide($(this).val());
+	          });
+	        }
+        });
+		$('body').on('click', 'button.action-addSection', function(){
+		  	console.log("okokok");
+			$("#frmEditionSection").dialog({
+		      height: 160,
+		      width: 300,
+		      modal: true,
+		      resizable: false,
+		      buttons: {
+		        "OK": function() {
+		        	var ajout = "<h3 id='" + $("#titre_section").val() + "'>" + $("#titre_section").val() + "</h3><div class='content_section' data-section='" + $("#titre_section").val() + "'></div>";
+			  		$("#accordion").append(ajout);
+				  	$("#accordion").accordion("refresh");
+			        $(this).dialog( "close" );
+			    }
+		      }
+		    });
+		    console.log("fin");
+		  
+		});
+		$("#accordion").accordion({
+			'activate' : function(event, ui) {
+				console.log(" le ui" ,ui);
+			}
+		});
+		$(document).on('click','.imgPetite', function(){
+			$(this).remove();
+		});
+		$(document).on('click','.chkImg', function(){
+			var img = $(this).data('ico');
+			var ry = $(this).data('rayon');
+			var id_produit = $(this).data('id');
+			var image_choisie = "<img class='imgPetite' src='/images/images_rayons/" + ry + "/" + img + "' data-id='" + id_produit + "'></img>";
+			console.log("alors : ", image_choisie);
+			var currentUi =  $("#accordion .ui-accordion-content-active");
+			currentUi.append(image_choisie);
+		});
+		$("#save").click(function() {
+			ttl = 0;
+			var catalogue = {};
+			var nom = $("#cata_nom").val();
+			if(nom !== "") {
+				catalogue.nom = nom;
+				catalogue.sections = [];
+				populatingCatalogue(catalogue);
+				catalogue.ttl = ttl;
+				console.log("cata : ", catalogue);
+				$.post("/edition/action/create",{'catalogue': catalogue}, function(result) {
+					var title = "";
+		            var l_type = "";
+		            
+		            if(result == 'OK') {
+		                title = "Succès";
+		                l_type = "succès";
+		            } else {
+		                title = "Echec";
+		                l_type = "error";
+		            }
+		            var infos = new PNotify({
+		                title: title,
+		                text: result,
+		                type: l_type,
+		                desktop: {
+		                  desktop: true
+		                }
+		            }); 
+				});
+			} else {
+				var infos = new PNotify({
+	                title: "catalogue",
+	                text: "il faut mettre un nom",
+	                type: "error",
+	                desktop: {
+	                  desktop: true
+	                }
+		        }); 
+			}
+		});
+	});
+</script>
+
+<div id="dvHeader" class="row">
+	<div id="container_edition" class="col-md-12" style="border:1px solid black; margin-left:20px;margin-top:20px">
+	Nom du catalogue<input type='text' id="cata_nom" value="<%=id%>"><button id="save" class="btn btn-danger btn-xs btn-action action-save" style="font-size: 13px;" title="Ajouter un catalogue" ><i class="fa fa-plus" style="margin-right:4px"></i>Ajouter un catalogue</button>
+	</div>
+</div>
+<div id="dvP" class="row">
+	<div id="container_sommaire" class="col-md-4" style="border:1px solid black; margin-left:20px;margin-top:10px;height:400px">
+		<ul>
+			<li class="colG"><font >Search</font><input type='text' id='search'></li>
+			<li class='liRayon colG'><font>Rayons</font></li>
+		</ul>
+
+		<button class="btn btn-success btn-xs btn-action action-addSection" style="font-size: 13px;" title="Ajouter une section" ><i class="fa fa-plus" style="margin-right:4px"></i>Ajouter une section</button><br>
+		
+		<div id="accordion">
+		
+		</div>
+		
+
+	</div>
+	<div id="container_e" class="col-md-6" style="margin-left:10px;margin-top:20px">
+	<table id="tblThumb">
+
+	</table>
+	</div>
+</div>
+<div id="frmEditionSection" class="ui-widget" title="Titre de la Section">
+    <table id="sct" class="ui-widget ui-widget-content">
+      <tr>
+        <td><input id="titre_section" type="text"></td>
+      </tr>
+    
+  </table>
+</div>

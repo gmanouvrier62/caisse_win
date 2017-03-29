@@ -1,0 +1,598 @@
+<html>
+<head>
+<link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.min.css">
+<link href="/js/dependencies/pnotify.custom.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/styles/style.css" type="text/css" media="screen" />
+<link href="/js/dependencies/jquery-ui/jquery-ui.css" rel="stylesheet">
+<link href="/js/dependencies/sc026/css/style.css" rel="stylesheet">
+<link href="/js/dependencies/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/js/dependencies/DataTables-1.10.12/media/css/jquery.dataTables.min.css" rel="stylesheet">
+
+
+<!--<script type="text/javascript" data-main="/js/dependencies/require.main.js"  src="/js/dependencies/require.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="/js/dependencies/msdropdown/css/msdropdown/dd.css" />
+
+
+ <script type="text/javascript" src="/js/dependencies/jquery.js"></script>
+
+ <script type="text/javascript" src="/js/dependencies/jquery-ui.js"></script>
+ <script type="text/javascript" src="/js/dependencies/pnotify.js"></script>
+ 
+ <script type="text/javascript" src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery.spasticNav.js"></script>
+ <script type="text/javascript" src="/js/dependencies/sc026/scr/modernizr.js"></script>
+ 	
+ <script type="text/javascript" src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.js"></script>	
+ <script type="text/javascript" src="/js/dependencies/caisse/caisse.js"></script>  
+ <script type="text/javascript" src="/js/dependencies/commande/commande.js"></script>  
+ 
+
+<script>
+ //require(['jquery','jquery-ui','pnotify','composant/caisse_init','composant/caisse','bootstrap-3.3.7-dist/js/bootstrap.min'], function () {
+ 	//alert($("#mondiv").attr('tom'));
+$(function(){
+  $("#dvCheque").hide();
+  var globalTable;
+  var monthNames = [
+    "Janvier", "Février", "Mars",
+    "Avril", "Mai", "Juin", "Juillet",
+    "Août", "Septembre", "Octobre",
+    "Novembre", "Decembre"
+  ];
+  var currentDate = new Date();
+  var date_de_paiement = "";
+  function impression(content){
+      var fen = window.open("", "", "height=500px, width=1000px,toolbar=0, menubar=0, scrollbars=1, resizable=1,status=0, location=0, left=10, top=10");
+      // style du popup
+      fen.document.body.style.color = '#000000';
+      //fen.document.body.style.backgroundColor = '#FFFFFF';
+      fen.document.body.style.padding = "20px";
+       
+      // Ajout des données a imprimer
+      fen.document.title = "";
+      fen.document.body.innerHTML += " " + content + " ";
+       
+      // Impression du popup
+      fen.window.print();
+       
+      //Fermeture du popup
+      //fen.window.close();
+      return true;
+  }
+  function GestionAffichage(fCommande) {
+
+    $(".rawContent").each(function(){
+      $(this).remove();
+    });
+    $("#idCommande").html(fCommande.id);
+    $("#statusCommande").html(fCommande.status);
+    $("#cmdNet").html(fCommande.total_commande);
+    $("#nbArt").html(fCommande.ttlArticles);
+    $("#mode_paiement").html("<b>" + fCommande.paiement + "</b>");
+    $("#infoCmd").show();
+    $("#btnAchat").show();
+    
+    currentIdClient = fCommande.client.id;
+   
+    for(var f = 0; f < fCommande.produits.length; f++) {
+      if (fCommande.status == "Livrée") {
+        console.log('livré');
+        //AjouterUneLigneHistoric(fCommande.produits[f], fCommande);
+        //voir pour afficher depuis le nanani historic
+        AjouterUneLigne(fCommande.produits[f], fCommande.status);
+      } else {
+        AjouterUneLigne(fCommande.produits[f], fCommande.status);
+      }
+    } 
+    $("#megaSearch").val("");         
+  }
+
+  function AjouterUneLigne(obj,state) {
+     var produit_ligne = "<tr class='rawContent' data-id='" +  obj.index_ligne + "'>";
+          produit_ligne += "<td class='rayon_pr'>" +  obj.rayon  + "</td>";
+          produit_ligne += "<td class='ref_pr'>" +  obj.ref_interne  + "</td>";
+          var imgPertinente = obj.idr;
+          if(obj.promo > 0) imgPertinente = '288567';
+          produit_ligne += "<td><img class='pictoImg' src='/images/images_rayons/" + obj.idr + "/" + obj.icone + "'></td>";
+          produit_ligne += "<td>" +   obj.nom  + "</td>";
+          produit_ligne += "<td class='prqte'>" +   obj.qte   + "</td>";
+          produit_ligne += "<td class='pu_pr'>" +  obj.pu  + "</td>";
+          produit_ligne += "<td class='prix_ttc'>" +  obj.ttc   + "</td>";
+          if(state != "Livrée") {
+            produit_ligne += "<td><button class='btn btn-danger action-suppr'>-</button></td>";
+          } else {
+             produit_ligne += "<td></td>";
+          }
+          produit_ligne += "</tr>";
+     $(produit_ligne).appendTo($("#tblCommande").find('tbody:last'));
+  }
+  
+  var currentIdClient = 0;
+  PNotify.prototype.options.styling = "jqueryui";
+  //init des box
+  $("#infoCmd").hide();
+  $("#btnAchat").hide();
+  var fullCommande = {
+      client: null, 
+      id: null, 
+      status: null, 
+      dt_livraison: null, 
+      produits: [],
+      total_commande: 0
+
+  };
+  
+ 	var currentClient ="";
+  var selectProduits = ""; 
+  //var btnChoixProduit = "<button class='btn btn-primary choix'>Selection</button>";
+
+ 	//$('#nav').spasticNav();
+	function rechercheClient(currentClient) {
+    $.get('/clients/getOneById/' + currentClient,{}, function(datas){
+        currentIdClient = datas.data.id;
+
+        var ligne_nom = "<li >" + datas.data.civ + " " + datas.data.prenom + " " + datas.data.nom + "</li>";
+        var ligne_adr = "<li style='margin-top:10px'>" + datas.data.adresse + "</li>";
+        var ligne_ville = "<li>" + datas.data.cp + " " + datas.data.ville + "</li>";
+        var ligne_tel = "<li style='margin-top:12px;font-weight:bold'>Tel : " + datas.data.tel + "</li>";
+        var ligne_mobile = "<li style='font-weight:bold'>Mobile : " + datas.data.mobile + "</li>";
+        $("#infos").html("<ul>" + ligne_nom + ligne_adr + ligne_ville + ligne_tel + ligne_mobile + "</ul>");
+        fullCommande.client = datas.data;
+        $("#txtAvoir").val(datas.data.current_avoir);
+        $("#txtDebit").val(datas.data.current_debit);
+    });
+  }
+ 	$.get('/clients/getAllJson',{}, function(datas){
+        var selectClients = ""; 
+        selectClients += "<option value='0'>--</option>";  
+        if(datas.err == null) {
+          var clt = datas;
+          console.log(clt[0]);
+
+          for (var cc = 0; cc < clt.length; cc++) {
+            var attrS ="";
+            //if(memoType == types[cc].id) attrS = "selected"; 
+            selectClients += "<option value='" + clt[cc].id + "' " + attrS + " >" + clt[cc].nom + "(" + clt[cc].prenom + " de " + clt[cc].ville + ")</option>";
+          }
+          
+        }
+    //affichage du choix du rayon dans la modal des choix de produit
+    $.get('/produits/types/list',{}, function(datas){
+          
+        if(datas.err == null) {
+          var types = datas.data;
+          selectProduits = "<select id='slP'>";
+          for (var cc = 0; cc < types.length; cc++) {
+            var attrS ="";
+            selectProduits += "<option value='" + types[cc].id + "'>" + types[cc].nom + "</option>";
+          }
+          selectProduits +=" </select>";
+          selectProduits += "<button title='recharger' class='btn btn-primary action-reload'><i class='fa fa-share'></i></button>";
+        }
+        $(".fontPr").append(selectProduits);
+        //setDataTable dans /js   caisse.js
+        //currentIdClient
+
+        globalTable = $("#tblP").setDataTable('produits',0);
+        //Gestion du choix produit
+        $("#slP").change(function(){
+          $("#megaSearch").val("");
+          var idRayon = $(this).find('option:selected').val();
+          //Choix d'un produit
+          globalTable.ajax.url( '/produits/getAll/' + idRayon ).load();
+        });
+        $('body').on('click', 'button.action-reload', function (event) {
+          var idRayon = $("#slP").find('option:selected').val();
+          if(idRayon>1) { 
+            console.log("ok modif critere " + idRayon);
+            globalTable.ajax.url( '/produits/getAll/' + idRayon ).load();
+
+          }
+          else
+            console.log("pas de critere valable");
+        });
+       
+    });
+        
+    //Ajout des infos clients en général et client selectionné
+    $("#slClient").append(selectClients);
+    if(currentIdClient > 0) {
+      $("#slClient").val(currentIdClient);
+      rechercheClient(currentIdClient);
+      
+    }
+      $("#slClient").change(function() {
+      	currentClient = $(this).val();
+      	rechercheClient(currentClient);
+
+        clientsProducts = "/produits/distinct/" + currentClient;
+        console.log("requete de recherche par default : ", clientsProducts);
+        globalTable.ajax.url(clientsProducts).load();
+        
+      });
+    });
+
+    //suppression d'une ligne produit
+    $('body').on('click', 'button.action-suppr', function (event) {
+      var numC = parseInt($("#idCommande").html());
+      if (isNaN(numC)) numC = 0; 
+      var rawId = parseInt($(this).parent().parent().data('id'));
+      $.post('/commandes/retirer_produit', {'id_commande': numC, 'id_client': currentIdClient, 'index_ligne': rawId}, function(datas) {
+          if(datas.err != null) {
+             var infos = new PNotify({
+                title: 'Erreur ',
+                text: datas.err,
+                type: 'error',
+                desktop: {
+                  desktop: true
+                }
+              }); 
+          } else {
+            //alert(JSON.stringify(datas.commande));
+              fullCommande = datas.commande;
+              GestionAffichage(fullCommande);
+          }
+        });
+    });
+     //affichage de la modale choix produit
+     $('body').on('click', 'button.action-newL', function (event) {
+       
+       var table = $("#tblCommande");
+       
+       //Affichage de la modale choix produit       
+       $("#dvChoixPr").css('display','block');
+       $(".close").click(function() {
+          $("#dvChoixPr").css('display','none');
+       });
+       
+     });
+
+    var dt = $("#tblCommande").setCommandeTable();
+
+    //ajout du nombre de produit (créé dans le datatable render)
+    $('body').on('click', 'button.action-add', function (event) {
+        var q = parseInt( $(this).parent().find(".fontQte").html() );
+        $(this).parent().find(".fontQte").html( q+1 );
+    });
+    $('body').on('click', 'button.action-min', function (event) {
+        var q = parseInt( $(this).parent().find(".fontQte").html() );
+        if(q>1) $(this).parent().find(".fontQte").html( q-1 );
+    });
+    ////
+    $('body').on('click', 'button.action-undo', function (event) {
+      if ($("#idCommande").html() !== "") {
+        var idC = $("#idCommande").html();
+        $.post("/commandes/undo", {'id_commande': idC}, function(ret) {
+          var title = "Marche Arrière";
+          var text, l_type;
+          if(ret.err !== "" && ret.err !== null) {
+            text = ret.err;
+            l_type = "error";
+          } else {
+            text = "OK";
+            l_type = "success";
+            //impression(ret.content);
+          } 
+          var infos = new PNotify({
+                    title: title,
+                    text: text,
+                    type: l_type,
+                    desktop: {
+                      desktop: true
+                    }
+          }); 
+          console.log("timeout va : ", '/commandes/load/' + idC + '/client/' + currentIdClient);
+          setTimeout(function(){ document.location.href = '/commandes/load/' + idC + '/client/' + currentIdClient;},2000);
+        });
+      }
+
+    });
+    $('body').on('click', 'button.action-print', function (event) {
+      if ($("#idCommande").html() !== "") {
+        var idC = $("#idCommande").html();
+        $.post("/commandes/print", {'id': $("#idCommande").html(), 'id_client': currentIdClient}, function(toPrint){
+          var title = "Impression";
+          var text, l_type;
+          if(toPrint.err !== "" && toPrint.err !== null) {
+            text = toPrint.err;
+            l_type = "error";
+          } else {
+            text = "OK";
+            l_type = "success";
+            impression(toPrint.content);
+          } 
+          var infos = new PNotify({
+                    title: title,
+                    text: text,
+                    type: l_type,
+                    desktop: {
+                      desktop: true
+                    }
+          }); 
+
+          setTimeout(function(){ document.location.href = '/commandes/load/' + idC + '/client/' + currentIdClient;},2000);
+        });
+      }
+    });
+    $('body').on('click', 'button.action-okpr', function (event) {
+        //On a choisi un produit 
+        var qte = $(this).parent().parent().find(".fontQte").html();
+        
+        var lignes = new Array();
+        var ligne = {
+          'id_produit': $(this).data('id'),
+          'qte': qte
+        }
+        //alert('pr :  ' + JSON.stringify(ligne));
+        lignes.push(ligne);
+        $("#dvChoixPr").css('display','none');//fermeture de la modale
+        var numC = parseInt($("#idCommande").html());
+        if (isNaN(numC)) numC = 0; 
+        $.post('/commandes/addormodify',{'id_commande': numC, 'avoir': $("#txtAvoir").val(), 'debit': $("#txtDebit").val(), 'id_client': currentIdClient, 'dt_livraison' : null, 'lignes': lignes,'tape':$("#megaSearch").val()}, function(datas){
+              //alert(JSON.stringify(datas.fullCommande));
+              if(datas.err != null) {
+                 var infos = new PNotify({
+                    title: 'Erreur ',
+                    text: datas.err,
+                    type: 'error',
+                    desktop: {
+                      desktop: true
+                    }
+                  }); 
+              } else {
+                //alert(JSON.stringify(datas.commande));
+                  fullCommande = datas.commande;
+                  GestionAffichage(fullCommande);
+              }
+          });
+        
+    });
+    function duplication() {
+      var numC = parseInt($("#idCommande").html());
+      if (!isNaN(numC) && !isNaN(currentIdClient) && currentIdClient > 0) {
+        $.post('/commandes/dupliquer',{'id_commande': numC, 'id_client': currentIdClient}, function(datas){
+           if(datas.err != null) {
+                 var infos = new PNotify({
+                    title: 'Erreur ',
+                    text: datas.err,
+                    type: 'error',
+                    desktop: {
+                      desktop: true
+                    }
+                  }); 
+              } else {
+                //alert(JSON.stringify(datas.commande));
+                  //fullCommande = datas.commande;
+                  //GestionAffichage(fullCommande);
+                  document.location.href = '/commandes/load/' + datas.commande.id + '/client/' + currentIdClient;
+              }
+        });
+      } else {
+         var infos = new PNotify({
+            title: 'Erreur ',
+            text: "Pas de duplication possible : commande=" + numC + ", client=" + currentIdClient,
+            type: 'error',
+            desktop: {
+              desktop: true
+            }
+          }); 
+      }
+    }
+    
+    function deliverCommande(obj) {
+      console.log("ATTENTION DANS LIVRER");
+      var numC = parseInt($("#idCommande").html());
+      if (isNaN(numC)) numC = 0; 
+      $.post('/commandes/livrer',{'id_commande': numC, 'avoir': $("#txtAvoir").val(), 'debit': $("#txtDebit").val(), 'id_client': currentIdClient, 'paiement': obj.data('paiement'), 'dt_paiement': date_de_paiement}, function(datas) {
+             if(datas.err != null) {
+                console.log("erreur pas null? = ", datas.err);
+                 var infos = new PNotify({
+                    title: 'Erreur ',
+                    text: datas.err,
+                    type: 'error',
+                    desktop: {
+                      desktop: true
+                    }
+                  }); 
+            } else {
+                 var infos = new PNotify({
+                    title: 'OK ',
+                    text: "Commande Livrée!",
+                    type: 'success',
+                    desktop: {
+                      desktop: true
+                    }
+                  }); 
+                 fullCommande = datas.commande;
+                 //GestionAffichage(fullCommande);
+                 date_de_paiement = "";
+                 $("#dtCheque").val("");
+                 console.log("avant setTimeout final : ", '/commandes/load/' + numC + '/client/' + currentIdClient);
+                 setTimeout(function(){ document.location.href = '/commandes/load/' + numC + '/client/' + currentIdClient;},1000);
+
+            }
+            //setTimeout(function(){document.location.href = '/commandes';},2000);
+            
+        });
+    }
+    
+    $('body').on('click', 'button.action-dupliquer', function (event) {
+      duplication();
+    });
+    $('body').on('click', 'button.action-cal', function(){
+      console.log("oulala");
+      $( "#calPickerCheque" ).datepicker({
+        defaultDate: currentDate,
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+         
+        onClose: function(selectedDate) {
+          currentDate = new Date(selectedDate);
+          var day = currentDate.getDate();
+          var monthIndex = currentDate.getMonth();
+          var year = currentDate.getFullYear();
+          date_de_paiement = day + ' ' + monthNames[monthIndex] + ' ' + year;
+          $("#dtCheque").val(date_de_paiement);
+          $(this).hide();
+        },
+          onSelect: function(selectedDate) {
+            console.log("youhou ", selectedDate);
+            currentDate = new Date(selectedDate);
+            var day = currentDate.getDate();
+            var monthIndex = currentDate.getMonth();
+            var year = currentDate.getFullYear();
+            date_de_paiement = day + ' ' + monthNames[monthIndex] + ' ' + year;
+            $("#dtCheque").val(date_de_paiement);
+            $(this).hide();
+          }
+      });
+
+    });
+    
+    $(".livraison").each(function(){
+      console.log("ok val");
+      $(this).click(function(){
+         deliverCommande($(this));
+         
+      });
+    });
+    $(".livraisonCheque").click(function(){
+      //affichage modale date paiement
+      var valCheque = this;
+      $("#dvCheque").dialog({
+              title: "Prise en compte chèque",
+              resizable: true,
+              height: 400,
+              width: 500,
+              modal: true,
+              buttons: {
+                "Save": function() {
+                  deliverCommande($(this));
+                  //livraison avec mention cheque
+                  $(this).dialog("close");
+                },
+                "Cancel": function() {
+                 date_de_paiement = "";
+                 $("#dtCheque").val("");
+                 $(this).dialog("close");
+                }
+              }
+      });
+      //
+    });
+  <% if (id !== null && id !== undefined) {%>
+      var currentID = '<%=id%>';
+      if (parseInt(currentID) > 0) {
+         //load d'une commande
+         
+         fullCommande = <%- f_com%>;
+         GestionAffichage(fullCommande);
+         
+      } 
+  <%}%> 
+
+ });
+</script>
+</head>
+<body>
+ <% if (!this.status_com) { this.status_com = 1;} %>
+<div id="dvHeader" class="row">
+<%- menu%>
+</div>
+
+<div id="dvMiddle" class="row">
+	<div id="mondiv" class="col-md-4 arrondi-plein">
+	   <font class="alignLabel">Client</font><select id="slClient"></select><br><div id='infos'></div>
+  
+     <div id="infoCmd">
+        <table>
+          <tr><td>Commande : </td><td id='idCommande'></td></tr>
+          <tr><td>Status : </td><td id='statusCommande'></td></tr>
+          <tr><td>Paiement : </td><td id='mode_paiement'></td></tr>
+        </table>
+        <% if (status_com == "Livrée" || status_com == "4") { %> 
+            <button title="dupliquer" class="btn btn-success action-dupliquer"><i class="fa fa-copy"></i></button>
+
+        <% } %>
+
+     </div>
+
+  </div>
+</div>
+
+<div id="dvMiddle" class="row">
+ 
+ <div class="col-md-10 arrondi-commande" style="margin-bottom:0px"><br>
+ <% if (status_com != "Livrée" && status_com != "4") { %>
+ <button id="firstP" class="btn btn-success action-newL" value="">Ajouter +</button>
+ <%}%>
+  <table id="tblCommande" class="order-column" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>RAYON</th>
+            <th class="txt80 marge">REF.</th>
+            <th class="txt80 marge"></th>
+            <th class="txt250 marge">DESIGNATION</th>
+            <th class="txt50 marge">Qté/Poids</th>
+            <th class="txt50 marge">Prix U.</th>
+            <th class="txt90 marge">TOTAL TTC</th>
+            <th class="txt90 marge"></th>
+            
+          </tr>
+    </thead>
+    <tbody id='zzz'>
+       
+    </tbody>
+  </table>
+
+</div>  
+<div class="col-md-10 arrondi-commande-footer" style="margin-top:0px">
+  <div class="arrondi-plein-art">
+    Art : <font id="nbArt"></font><br>
+
+  </div>
+  <div style="float:left;margin-right:500px;">
+    <ul class="infosLi">
+      <li>Avoir : <input id='txtAvoir' class="txt50" type='text' value="0"></li>
+      <li>Débit : <input id='txtDebit' class="txt50" type='text' value="0"></li>
+    </ul>
+  </div>
+  <div style="float:left;">
+    <font id="marchandise">Marchandises</font><font id='ttlMarchandises' style="margin-right:20px"></font>
+   
+    
+    <% if (status_com == "Validée" || status_com == "2") { %> 
+    <button title="Chèque" data-paiement="chèque" class="btn btn-warning livraisonCheque"><i class="fa fa-dedent"></i></button>
+    <button title="Espèces" data-paiement="espèce" class="btn btn-warning livraison"><i class="fa fa-eur"></i></button>
+    <button title="Carte" data-paiement="cb" class="btn btn-warning livraison"><i class="fa fa-cc-visa"></i></button>
+    
+    <% } %>
+    <% if (status_com == "Validée" || status_com == "2" || status_com == 'Livrée' || status_com == '4') { %> 
+    
+      <button title="Marche arrière" class="btn btn-success action-undo"><i class="fa fa-unlock"></i></button>
+    
+
+    <% } %>
+    
+    <button title="print" class="btn btn-success action-print"><i class="fa fa-print"></i></button>
+      
+    <br>
+    <div class="arrondi-plein-net"><b>Net à payer</b><font id="cmdNet" class="txt50"></font></div>
+  </div>
+</div>  
+ <%- partial ('/home/gilles/node/git/caisse/views/produits/choix.ejs',{'nom': 'Gilles Manouvrier'}) %>
+
+
+<div id="dvCheque" >
+        A encaisser dès le<input type='text' id='dtCheque' value=''><button id="calDate" class="btn btn-success btn-xs btn-action action-cal" style="font-size: 13px;margin-bottom:5px" title="Choisir le jour" ><i class="fa fa-calendar"></i></button>
+        <div id='calPickerCheque'></div>
+    
+</div>
+
+
+
+</body>
+
+</html>

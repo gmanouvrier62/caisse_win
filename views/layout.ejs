@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New Sails App</title>
+
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+    <!--  
+        Stylesheets and Preprocessors
+        ==============================
+
+        You can always bring in CSS files manually with `<link>` tags, or asynchronously
+        using a solution like AMD (RequireJS).  Or, if you like, you can take advantage 
+        of Sails' conventional asset pipeline (boilerplate Gruntfile).
+
+        By default, stylesheets from your `assets/styles` folder are included
+        here automatically (between STYLES and STYLES END). Both CSS (.css) and LESS (.less)
+        are supported. In production, your styles will be minified and concatenated into
+        a single file.
+        
+        To customize any part of the built-in behavior, just edit `tasks/pipeline.js`.
+        For example, here are a few things you could do:
+            
+            + Change the order of your CSS files
+            + Import stylesheets from other directories
+            + Use a different or additional preprocessor, like SASS, SCSS or Stylus
+    -->
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="/styles/style.css">
+    <!--STYLES END-->
+  </head>
+
+  <body>
+    <%- body %>
+
+
+
+    <!--
+        Client-side Templates
+        ========================
+
+        HTML templates are important prerequisites of modern, rich client applications.
+        To work their magic, frameworks like Backbone, Angular, Ember, and Knockout require
+        that you load these templates client-side.
+
+        By default, your Gruntfile is configured to automatically load and precompile
+        client-side JST templates in your `assets/templates` folder, then
+        include them here automatically (between TEMPLATES and TEMPLATES END).
+        
+        To customize this behavior to fit your needs, just edit `tasks/pipeline.js`.
+        For example, here are a few things you could do:
+
+            + Import templates from other directories
+            + Use a different template engine (handlebars, jade, dust, etc.)
+            + Internationalize your client-side templates using a server-side
+              stringfile before they're served.
+    -->
+
+    <!--TEMPLATES-->
+    
+    <!--TEMPLATES END-->
+
+
+    <!--
+
+      Client-side Javascript
+      ========================
+
+      You can always bring in JS files manually with `script` tags, or asynchronously
+      on the client using a solution like AMD (RequireJS).  Or, if you like, you can 
+      take advantage of Sails' conventional asset pipeline (boilerplate Gruntfile).
+
+      By default, files in your `assets/js` folder are included here
+      automatically (between SCRIPTS and SCRIPTS END).  Both JavaScript (.js) and
+      CoffeeScript (.coffee) are supported. In production, your scripts will be minified
+      and concatenated into a single file.
+      
+      To customize any part of the built-in behavior, just edit `tasks/pipeline.js`.
+      For example, here are a few things you could do:
+          
+          + Change the order of your scripts
+          + Import scripts from other directories
+          + Use a different preprocessor, like TypeScript
+
+    -->
+
+    <!--SCRIPTS-->
+    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/examples/resources/demo.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/examples/resources/syntax/shCore.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.bootstrap.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.bootstrap.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.bootstrap4.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.bootstrap4.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.foundation.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.foundation.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.jqueryui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.jqueryui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.semanticui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/autoFill.semanticui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/dataTables.autoFill.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/AutoFill/js/dataTables.autoFill.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.bootstrap.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.bootstrap.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.bootstrap4.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.colVis.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.colVis.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.flash.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.flash.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.foundation.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.foundation.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.html5.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.html5.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.jqueryui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.jqueryui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.print.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.print.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.semanticui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/buttons.semanticui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/dataTables.buttons.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/ColReorder/js/dataTables.colReorder.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/FixedColumns/js/dataTables.fixedColumns.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/FixedColumns/js/dataTables.fixedColumns.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/FixedHeader/js/dataTables.fixedHeader.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/FixedHeader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/KeyTable/js/dataTables.keyTable.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/KeyTable/js/dataTables.keyTable.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/dataTables.responsive.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.bootstrap.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.bootstrap.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.bootstrap4.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.foundation.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.foundation.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.jqueryui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.jqueryui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.semanticui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Responsive/js/responsive.semanticui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/RowReorder/js/dataTables.rowReorder.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/RowReorder/js/dataTables.rowReorder.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Scroller/js/dataTables.scroller.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Scroller/js/dataTables.scroller.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Select/js/dataTables.select.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/extensions/Select/js/dataTables.select.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.bootstrap.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.bootstrap4.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.foundation.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.foundation.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.jqueryui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.jqueryui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.material.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.material.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.semanticui.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.semanticui.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.uikit.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/dataTables.uikit.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.min.js"></script>
+    <script src="/js/dependencies/DataTables-1.10.12/media/js/jquery.js"></script>
+    <script src="/js/dependencies/Elessar-master/dist/elessar.js"></script>
+    <script src="/js/dependencies/Elessar-master/dist/elessar.min.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/element.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/eventprop.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/evtx.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/indicator.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/mark.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/phantom.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/raf.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/range.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/rangebar.js"></script>
+    <script src="/js/dependencies/Elessar-master/lib/vertical.js"></script>
+    <script src="/js/dependencies/Elessar-master/test/functional.js"></script>
+    <script src="/js/dependencies/Elessar-master/test/rangebar.js"></script>
+    <script src="/js/dependencies/Elessar-master/test/utils.js"></script>
+    <script src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="/js/dependencies/bootstrap-3.3.7-dist/js/npm.js"></script>
+    <script src="/js/dependencies/caisse/caisse.js"></script>
+    <script src="/js/dependencies/commande/commande.js"></script>
+    <script src="/js/dependencies/composant/ModalFormBind.js"></script>
+    <script src="/js/dependencies/composant/caisse.js"></script>
+    <script src="/js/dependencies/composant/caisse_init.js"></script>
+    <script src="/js/dependencies/composant/occurences (copie).js"></script>
+    <script src="/js/dependencies/composant/occurences.js"></script>
+    <script src="/js/dependencies/composant/selection_groupe.js"></script>
+    <script src="/js/dependencies/doT-master/benchmarks/compileBench.js"></script>
+    <script src="/js/dependencies/doT-master/benchmarks/jslitmus.js"></script>
+    <script src="/js/dependencies/doT-master/benchmarks/templatesBench.js"></script>
+    <script src="/js/dependencies/doT-master/benchmarks/templating/doT.js"></script>
+    <script src="/js/dependencies/doT-master/benchmarks/templating/doU.js"></script>
+    <script src="/js/dependencies/doT-master/doT.js"></script>
+    <script src="/js/dependencies/doT-master/doT.min.js"></script>
+    <script src="/js/dependencies/doT-master/doU.js"></script>
+    <script src="/js/dependencies/doT-master/examples/customdoT.js"></script>
+    <script src="/js/dependencies/doT-master/examples/express/index.js"></script>
+    <script src="/js/dependencies/doT-master/examples/express/lib/app.js"></script>
+    <script src="/js/dependencies/doT-master/examples/express/lib/render/index.js"></script>
+    <script src="/js/dependencies/doT-master/examples/withdoT.js"></script>
+    <script src="/js/dependencies/doT-master/index.js"></script>
+    <script src="/js/dependencies/doT-master/test/conditionals.test.js"></script>
+    <script src="/js/dependencies/doT-master/test/defines.test.js"></script>
+    <script src="/js/dependencies/doT-master/test/dot.test.js"></script>
+    <script src="/js/dependencies/doT-master/test/iteration.test.js"></script>
+    <script src="/js/dependencies/doT-master/test/util.js"></script>
+    <script src="/js/dependencies/gauge.min.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/Gruntfile.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.ar.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.az.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.bg.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.cs.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.da.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.de.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.el.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.en.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.es.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.fa-IR.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.fr.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.he.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.it.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.nl.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.no.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.pl.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.pt-BR.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.pt-PT.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.ro.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.ru.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.sq.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.tr.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.ua.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/i18n/query-builder.zh-CN.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/js/query-builder.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/js/query-builder.min.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/js/query-builder.standalone.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/dist/js/query-builder.standalone.min.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/core.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/data.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/defaults.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/jquery.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/main.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/model.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/bt-checkbox/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/bt-selectpicker/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/bt-tooltip-errors/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/change-filters/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/filter-description/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/invert/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/mongodb-support/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/not-group/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/sortable/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/sql-support/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/plugins/unique-filter/plugin.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/public.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/template.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/src/utils.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/common.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/core.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/data.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/plugins-gui.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/plugins.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/plugins.mongo-support.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/plugins.not-group.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/plugins.sql-support.module.js"></script>
+    <script src="/js/dependencies/jQuery-QueryBuilder-2.4.1/tests/utils.module.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/Gruntfile.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/jQuery.extendext.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/jQuery.extendext.min.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/tests/deepmerge-tests.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/tests/jquery-core-tests.js"></script>
+    <script src="/js/dependencies/jQuery.extendext-master/tests/tests.js"></script>
+    <script src="/js/dependencies/jauge/Gruntfile.js"></script>
+    <script src="/js/dependencies/jauge/src/jquery.gauge.js"></script>
+    <script src="/js/dependencies/jauge/test/tests.js"></script>
+    <script src="/js/dependencies/jquery-ui.js"></script>
+    <script src="/js/dependencies/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="/js/dependencies/jquery-ui/jquery-ui.js"></script>
+    <script src="/js/dependencies/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/js/dependencies/jquery.js"></script>
+    <script src="/js/dependencies/jquery.knob.min.js"></script>
+    <script src="/js/dependencies/jquery.spasticNav.js"></script>
+    <script src="/js/dependencies/msdropdown/js/jquery/jquery-1.9.0.min.js"></script>
+    <script src="/js/dependencies/msdropdown/js/jquery/tester.js"></script>
+    <script src="/js/dependencies/msdropdown/js/msdropdown/jquery.dd.js"></script>
+    <script src="/js/dependencies/msdropdown/js/msdropdown/jquery.dd.min.js"></script>
+    <script src="/js/dependencies/pnotify.custom.min.js"></script>
+    <script src="/js/dependencies/pnotify.js"></script>
+    <script src="/js/dependencies/require.js"></script>
+    <script src="/js/dependencies/require.main.js"></script>
+    <script src="/js/dependencies/sc026/scr/jquery.js"></script>
+    <script src="/js/dependencies/sc026/scr/modernizr.js"></script>
+    <script src="/js/dependencies/tools.js"></script>
+    <script src="/js/dependencies/tooltipster/Gruntfile.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/plugins/tooltipster/SVG/tooltipster-SVG.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/plugins/tooltipster/SVG/tooltipster-SVG.min.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/tooltipster.bundle.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/tooltipster.bundle.min.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/tooltipster.core.js"></script>
+    <script src="/js/dependencies/tooltipster/dist/js/tooltipster.core.min.js"></script>
+    <!--SCRIPTS END-->
+  </body>
+</html>

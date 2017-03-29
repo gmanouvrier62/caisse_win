@@ -1,0 +1,242 @@
+<html>
+<head>
+<link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.min.css">
+<link href="/js/dependencies/pnotify.custom.min.css" rel="stylesheet">
+<link href="/js/dependencies/caisse.css" rel="stylesheet">
+<link rel="stylesheet" href="/styles/style.css" type="text/css" media="screen" />
+<link href="/js/dependencies/jquery-ui/jquery-ui.css" rel="stylesheet">
+<link href="/js/dependencies/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/js/dependencies/DataTables-1.10.12/media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/js/dependencies/tooltipster/dist/css/tooltipster.bundle.min.css" />
+<link href="/js/dependencies/sc026/css/style.css" rel="stylesheet">
+   
+ <script type="text/javascript" src="/js/dependencies/jquery.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery-ui.js"></script>
+ <script type="text/javascript" src="/js/dependencies/pnotify.js"></script>
+ <script type="text/javascript" src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery.spasticNav.js"></script>
+ <script type="text/javascript" src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.js"></script>		
+ <script type="text/javascript" src="/js/dependencies/composant/ModalFormBind.js"></script>
+ <script type="text/javascript" src="/js/dependencies/tooltipster/dist/js/tooltipster.bundle.min.js"></script> 
+ <script type="text/javascript" src="/js/dependencies/sc026/scr/modernizr.js"></script>
+<script>
+
+
+$(function(){
+function impression(content){
+    var fen = window.open("", "", "height=500, width=600,toolbar=0, menubar=0, scrollbars=1, resizable=1,status=0, location=0, left=10, top=10");
+     
+    // style du popup
+    fen.document.body.style.color = '#000000';
+    fen.document.body.style.backgroundColor = '#FFFFFF';
+    fen.document.body.style.padding = "20px";
+     
+    // Ajout des données a imprimer
+    fen.document.title = "ACHATS";
+    fen.document.body.innerHTML += " " + content + " ";
+     
+    // Impression du popup
+    fen.window.print();
+     
+    //Fermeture du popup
+    fen.window.close();
+    return true;
+    
+
+}
+var tIndex = 0;
+ $('#nav').spasticNav();
+ var tableAchats = $('#tblAchats').DataTable( {
+        "columnDefs": [
+            {
+                "render": function ( data, type, row ) {
+                    var html = "<font class='prNom' data-tooltip-content='#tooltip_content_" + row[0] + "'>" + row[1] + "</font>";
+
+                    html += "<div class='tooltip_templates' style='display:none'><span id='tooltip_content_" + row[0] + "'><img src='/images/images_rayons/" + row[10] + "/" + row[9] +  "'' /><strong>" + row[8] + "</strong></span></div>";
+                    //console.log(row[9] + "/" + row[8]);
+                    return html;
+                },
+                "targets": 1
+            },
+            {
+                "render": function ( data, type, row ) {
+                    
+                    return "<font data-id='" + row[0] + "'  data-qte='" + row[4] + "' class='ftDispo'>" + row[12] + "</font>";
+                },
+                "targets": 5
+            },
+            {
+                "render": function ( data, type, row ) {
+                    var html = '<button class="btn btn-primary btn-xs btn-action action-view" style="font-size: 13px;" title="Commandes associées" data-id="' + row[0] + '"><i class="fa fa-eye"></i></button>';
+                    
+                    /*
+                    html += '<button class="btn btn-success btn-xs btn-action action-maj" style="font-size: 13px;" title="Voir le produit" data-id="' + row[0] + '"><i class="fa fa-chevron-down"></i>Valider</button>';
+                    */
+                    return html;
+                },
+                "targets": 8
+            },
+            {
+                "render": function ( data, type, row ) {
+                    //ttl ttc
+                    return row[5];
+                },
+                "targets": 6
+            },
+            {
+                "render": function ( data, type, row ) {
+                    //ttl tva
+                    return row[6];
+                },
+                "targets": 7
+            },
+            { "className": "col_std", "targets": [ 0 ] },
+            { "className": "col_xxl", "targets": [ 1 ] },
+            { "className": "col_std", "targets": [ 2 ] },
+            { "className": "col_std", "targets": [ 3 ] },
+            { "className": "col_std", "targets": [ 4 ] },
+            { "className": "col_std", "targets": [ 5 ] },
+            { "className": "col_std", "targets": [ 6 ] },
+            { "className": "col_std", "targets": [ 7 ] },
+            { "className": "col_xl", "targets": [ 8 ] },
+            { "visible": false,  "targets": [5] },
+        ],
+        "oLanguage": {"sZeroRecords": "", "sEmptyTable": "<b>Pas de produits achetés</b>"},
+        "processing": false,
+        "serverSide": false,
+        'searching': false,
+        'bInfo': false,
+        "paging": false,
+        "ordering": true,
+        "defaultOrdering": [[2, 'desc']],
+        "search": {
+            "smart": false
+        },
+        "ajax": '/achats/achat_todo',
+        "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+            
+                // testrow IS THE CSS CLASS WITH THE CORRECT background-color
+                /*
+                $('td:eq(0)', nRow).addClass( 'complet' );
+                $('td:eq(1)', nRow).addClass( 'complet' );
+                $('td:eq(2)', nRow).addClass( 'complet' );
+                $('td:eq(3)', nRow).addClass( 'complet' );
+                */
+            //alert(aData[4] + ", " + aData[5]);
+            var cl = '';
+            if(aData[4] < aData[12]) cl = 'complet';
+            if(aData[4] == aData[12]) cl = 'complet';
+            
+            if(aData[12] == 0) 
+                cl = "insuffisant";
+            else 
+                if(aData[4] > aData[12]) cl = 'partiel';
+            
+            
+            $('td:eq(0)', nRow).addClass( cl );
+            
+            $('td:eq(1)', nRow).addClass( cl );
+            $('td:eq(2)', nRow).addClass( cl );
+            $('td:eq(3)', nRow).addClass( cl );
+            $('td:eq(4)', nRow).addClass( cl );
+            $('td:eq(5)', nRow).addClass( cl );
+            $('td:eq(6)', nRow).addClass( cl );
+            $('td:eq(7)', nRow).addClass( cl );
+            $('td:eq(8)', nRow).addClass( cl );
+            
+            
+            return nRow;
+        }
+    });
+    //scrollX: true 
+    tableAchats.on('draw.dt', function(){
+        $('.prNom').each(function(){
+            $(this).tooltipster();
+        });
+    });
+    $("#print").click(function(){
+        var st = "style='border: 1px solid black; padding: 2px; margin-left:3px;margin-right:3px'";
+        var template = "<table " + st + " id='tblPrint'><thead><tr><th>Ref</th><th>Désignation</th><th>Quantité</th></tr></thead><tbody><tr><td></td><td></td><td></td></tr>";
+        var ligne = "";
+        $(".ftDispo").each(function(){
+            if( $(this).html() != 'null' && parseInt($(this).html()) > 0 ) {
+                var idp = $(this).data('id');
+                var nom = $(this).parent().parent().find('.prNom').html();
+                var qte = $(this).data('qte');
+                ligne += "<tr ><td " + st + ">" + idp + "</td><td " + st + ">" + nom + "</td><td " + st + ">" + qte + "</td></tr>";
+            } 
+        });
+        impression(template + ligne + "</table>");
+    });
+    $('body').on('click', 'button.action-maj', function(){
+        tbQ = new Array();   
+        $(".ftDispo").each(function(){
+            var cur = {
+              'id_produit': $(this).data('id'),
+              'qte_ttl': $(this).data('qte')
+            };
+            tbQ.push(cur);
+        });
+        $.post("/achats/faire_achat",{'datas': tbQ}, function(result){
+            
+            if(result != null && result != "") {
+                //KO
+                var infos = new PNotify({
+                    title: 'Erreur ',
+                    text: result,
+                    type: 'error',
+                    desktop: {
+                      desktop: true
+                    }
+                  }); 
+            } else {
+                //OK
+                var infos = new PNotify({
+                    title: 'Achats enregistrés ',
+                    text: "",
+                    type: 'success',
+                    desktop: {
+                      desktop: true
+                    }
+                }); 
+                document.location.href = "/achats/home";
+            }
+
+        });     
+            
+    });
+});
+</script>
+</head>
+<body>
+<div id="dvHeader" class="row">
+<%- menu %>
+</div>
+<div style="text-align:center"><H1><font >ACHATS</font></H1><button id="print" class="btn btn-success btn-xs btn-action action-print" style="font-size: 13px;" title="Imprimer" ><i class="fa fa-print"></i>Imprimer</button></div>
+
+<div id="dvMiddle" class="row">
+
+	<div id="rowAchats" class="col-md-10" style="margin-left:100px;margin-top:20px;">
+		<table id="tblAchats" class="order-column" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                	<th>REF</th>
+                    <th>NOM</th>
+                    <th>PU</th>
+                    <th>TVA</th>
+                    <th>Qté </th>
+                    <th>Qté Dispo</th>
+                    
+                    <th>Total TTC</th>
+                    <th>Total HT</th>
+                    <th><button class="btn btn-danger btn-xs btn-action action-maj" style="font-size: 13px;" title="Voir le produit" ><i class="fa fa-chevron-down"></i>Valider</button></th>
+                    
+                    
+                </tr>
+            </thead>
+            
+	</div>
+</div>
+
+</body>
+</html>

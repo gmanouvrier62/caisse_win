@@ -1,0 +1,56 @@
+<nav id="topNav">
+	<ul>
+		<li><a href="/">Caisse</a></li>
+		<li><a href="/produits">Produits</a></li>
+		<li><a href="/clients">Clients</a></li>
+		<li><a href="/fournisseurs">Fournisseurs</a></li>
+		<li><a title="" href="#">Achats</a>
+			<ul>
+				<li><a href="/achats">Commandes</a></li>
+				<li><a href="/stocks">Stocks</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Commandes</a>
+			<ul>
+				<li><a href="/commandes/status/2">A livrer</a></li>
+				<li><a href="/commandes">Liste</a></li>
+				
+				
+			</ul>
+		</li>
+		<li><a href="#">Statistiques</a>
+			<ul>
+				<li><a href="/chiffres/ventes/1">Ventes jour</a></li>
+				<li><a href="/chiffres/ventes/2">Ventes période</a></li>
+			</ul></li>
+		<li class="last"><a href="#">Config</a>
+			<ul>
+				<li><a href="/maj">Mise à jour</a></li>
+				<li><a href="/edition">Marketing</a></li>
+				<li><a href="/produits/tva">TVA</a></li>
+				<li><a href="/produits/marge">Commission</a></li>
+				
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+
+
+<script>
+(function($){
+		var nav = $("#topNav");
+		nav.find("li").each(function() {
+			if ($(this).find("ul").length > 0) {
+				$("<span>").text("^").appendTo($(this).children(":first"));
+				$(this).mouseenter(function() {
+				$(this).find("ul").stop(true, true).slideDown();});
+				$(this).mouseleave(function() {
+				$(this).find("ul").stop(true, true).slideUp();});
+			}
+		});
+	})(jQuery);
+
+
+
+</script>

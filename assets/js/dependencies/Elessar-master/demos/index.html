@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="https://rawgithub.com/quarterto/Estira/master/index.js"></script>
+<script src="../dist/elessar.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../elessar.css">
+</head>
+<body>
+
+<pre class="changing"></pre>
+
+<script>
+$('body').prepend(RangeBar({
+  min: 0, // value at start of bar
+  max: 100, // value at end of bar
+  valueFormat: function(a) {return a;}, // formats a value on the bar for output
+  valueParse: function(a) {return a;}, // parses an output value for the bar
+  values: [
+    [
+      1,
+      50
+    ]
+  ],
+  label: function(a){return JSON.stringify(a)},
+  snap: 1000 * 60 * 15,
+  minSize: 10,
+  bgLabels: 4
+}).on('changing', function(ev, ranges, changed) {
+  console.log(changed);
+  $('pre.changing').html(JSON.stringify(ranges,null,2));
+}).on('change', function(ev, ranges, changed) {
+  console.log(changed);
+  $('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
+}).$el);
+</script>
+</body>
+</html>

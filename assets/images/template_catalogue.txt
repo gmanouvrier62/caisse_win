@@ -1,0 +1,5 @@
+<H1 style="margin-top:50px;margin-bottom:50px;text-align:center">@@TITRE@@</H1><br>
+<table style="">
+@@CONTENT@@
+</table>
+  

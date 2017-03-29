@@ -1,0 +1,266 @@
+<html>
+<head>
+<link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.min.css">
+<link href="/js/dependencies/pnotify.custom.min.css" rel="stylesheet">
+<link href="/js/dependencies/caisse.css" rel="stylesheet">
+<link rel="stylesheet" href="/styles/style.css" type="text/css" media="screen" />
+<link href="/js/dependencies/jquery-ui/jquery-ui.css" rel="stylesheet">
+<link href="/js/dependencies/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/js/dependencies/DataTables-1.10.12/media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="/js/dependencies/sc026/css/style.css" rel="stylesheet">  
+ <script type="text/javascript" src="/js/dependencies/jquery.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery-ui.js"></script>
+ <script type="text/javascript" src="/js/dependencies/pnotify.js"></script>
+ <script type="text/javascript" src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery.spasticNav.js"></script>
+ <script type="text/javascript" src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.js"></script>		
+ <script type="text/javascript" src="/js/dependencies/composant/ModalFormBind.js"></script>
+ <script type="text/javascript" src="/js/dependencies/sc026/scr/modernizr.js"></script>
+<script>
+$(function(){
+
+    PNotify.prototype.options.styling = "jqueryui";
+ 	$("#formModal").hide();
+ 	$('#nav').spasticNav();
+    //init des touches
+    for(var t = 1; t < 11; t++) {
+    	$("#ligne1").append("<div id='l1_" + t + "' data-nom='' data-ht='' data-ttc='' class='col-md-1 push_button' style='width:90px;height:70px;margin-left:2px;margin-bottom:12px'></div>");
+		$("#ligne2").append("<div id='l2_" + t + "' data-nom='' data-ht='' data-ttc='' class='col-md-1 push_button' style='width:90px;height:70px;margin-left:2px;margin-bottom:12px'></div>");
+		$("#ligne3").append("<div id='l3_" + t + "' data-nom='' data-ht='' data-ttc='' class='col-md-1 push_button' style='width:90px;height:70px;margin-left:2px;margin-bottom:12px'></div>");
+		$("#ligne4").append("<div id='l4_" + t + "' data-nom='' data-ht='' data-ttc='' class='col-md-1 push_button' style='width:90px;height:70px;margin-left:2px;margin-bottom:12px'></div>");
+    }
+
+    $('body').on('click', 'button.action-view', function (event) {
+        $("#formModale").ModalFormBind( {
+                                            'title': "Fiche Produit",
+                                            'resource':'produits', 
+                                            'id': $(this).data("id"),
+                                            'fields' : {
+                                                            'id_fournisseur': 'Fournisseur',
+                                                            'nom': 'Nom',
+                                                            'ref_interne': 'Réf interne',
+                                                            'ref_externe': 'Réf externe',
+                                                            'id_type': 'Type',
+                                                            'pht': 'Prix HT',
+                                                            'tva': 'TVA',
+                                                            'ttc_externe': 'Prix TTC achat',
+                                                            'tx_com': '% Comm',
+                                                            'ttc_vente': 'Prix TTC vente',
+                                                            'icone': 'Icône',
+                                                            'conditionnement': 'Conditionnement',
+                                                            'disponibilite': 'dispo'
+                                                        }
+                                        } );
+        
+    });
+    
+     $('body').on('click', 'button.action-new', function (event) {
+        $("#formModale").ModalFormBind( {
+                                            'title': "Fiche Client",
+                                            'resource':'produits', 
+                                            'id': 'N',
+                                            'fields' : {
+                                                            'id_fournisseur': 'Fournisseur',
+                                                            'nom': 'Nom',
+                                                            'ref_interne': 'Réf interne',
+                                                            'ref_externe': 'Réf externe',
+                                                            'id_type': 'Type',
+                                                            'pht': 'Prix HT',
+                                                            'tva': 'TVA',
+                                                            'ttc_externe': 'Prix TTC achat',
+                                                            'tx_com': '% Comm',
+                                                            'ttc_vente': 'Prix TTC vente',
+                                                            'icone': 'Icône',
+                                                            'conditionnement': 'Conditionnement',
+                                                            'disponibilite': 'dispo'
+                                                        }
+                                        });
+    });
+
+    var tableProduits = $('#tblProduits').DataTable( {
+        "columnDefs": [
+            {
+                // The `data` parameter refers to the data for the cell (defined by the
+                // `data` option, which defaults to the column being worked with, in
+                // this case `data: 0`.
+                "render": function ( data, type, row ) {
+                    var html = '<button class="btn btn-primary btn-xs btn-action action-view" style="font-size: 13px;" title="Voir le produit" data-id="' + row[0] + '"><i class="fa fa-eye"></i></button>';
+                    
+                    
+                    return html;
+                },
+                "targets": 12
+            },
+            {
+                // The `data` parameter refers to the data for the cell (defined by the
+                // `data` option, which defaults to the column being worked with, in
+                // this case `data: 0`.
+                "render": function ( data, type, row ) {
+                    var classette ="";
+                    if(parseInt(row[12]) > 0) {
+                        classette = "disponible";
+                    } else {
+                        
+                        classette = "indisponible";
+                    }
+                    var html = "<div class='" + classette + "'>" + classette + "</div>";
+                    return html;
+                },
+                "targets": 13
+            },
+            {
+                // The `data` parameter refers to the data for the cell (defined by the
+                // `data` option, which defaults to the column being worked with, in
+                // this case `data: 0`.
+                "render": function ( data, type, row ) {
+                    var html = "<img class='pictoImg' src='/images/images_rayons/" + row[2] + "/" + row[10]  + "'>";
+                                        
+                    return html;
+                },
+                "targets": 10
+            },
+            { "visible": false,  "targets": [ 0,3,4 ] },
+             { "className": "col_xxl", "targets": [ 1 ] },
+             { "className": "col_std", "targets": [ 2 ] },
+             { "className": "col_std", "targets": [ 5 ] },
+             { "className": "col_std", "targets": [ 6 ] },
+             { "className": "col_std", "targets": [ 7 ] },
+             { "className": "col_std", "targets": [ 9 ] },
+             { "className": "col_std", "targets": [ 8 ] },
+             
+             { "className": "col_std", "targets": [ 11 ] },
+             { "className": "col_std", "targets": [ 12 ] },
+             
+             { "className": "col_std", "targets": [ 13 ] }
+             
+
+
+        ],
+        "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+           
+            var cl = "classicGrey";
+           
+            $('td:eq(0)', nRow).addClass( cl );
+            
+            $('td:eq(1)', nRow).addClass( cl );
+            $('td:eq(2)', nRow).addClass( cl );
+            $('td:eq(3)', nRow).addClass( cl );
+            $('td:eq(4)', nRow).addClass( cl );
+            $('td:eq(5)', nRow).addClass( cl );
+            $('td:eq(6)', nRow).addClass( cl );
+            //$('td:eq(7)', nRow).addClass( cl );
+            $('td:eq(8)', nRow).addClass( cl );
+            $('td:eq(9)', nRow).addClass( cl );
+            $('td:eq(10)', nRow).addClass( cl );
+            $('td:eq(11)', nRow).addClass( cl );
+            $('td:eq(12)', nRow).addClass( cl );
+            $('td:eq(13)', nRow).addClass( cl );
+            
+            
+            return nRow;
+           
+        },
+        "processing": false,
+        "serverSide": false,
+        "paging": true,
+        "ordering": true,
+        "defaultOrdering": [[2, 'desc']],
+        "searching": true,
+        "search": {
+            "smart": false
+        },
+        "ajax": '/<%=action%>/getAll/<%=memoType%>',
+        "dom": '<"toolbar">frtip'
+    });
+   
+    console.log($('#tblProduits').html());
+    $("div.toolbar").html('<b>Tout rayon:&nbsp;</b><input type="text" id="megaSearch" value="">');
+     $("#megaSearch").keydown(function(){
+        console.log("mega searchouille");
+        var critere = $(this).val();
+        if(critere.length > 3) {
+            tableProduits.ajax.url('/produits/getAllCrit/' + critere).load();
+        }
+    });
+    $.get('/produits/types/list',{}, function(datas){
+        var selectProduits = "";   
+        if(datas.err == null) {
+          var types = datas.data;
+          var memoType = <%=memoType%>;
+
+          for (var cc = 0; cc < types.length; cc++) {
+            var attrS ="";
+            if(memoType == types[cc].id) attrS = "selected"; 
+            selectProduits += "<option value='" + types[cc].id + "' " + attrS + " >" + types[cc].nom + "</option>";
+          }
+          
+        }
+
+        $("#rayon").append(selectProduits);
+    });
+    $("#rayon").change(function(){
+        var tp = $(this).val();
+        //modifier le contriller home rechercher dedans les produits directement
+        tableProduits.ajax.url( '/<%=action%>/getAll/' + tp ).load();
+        $("#megaSearch").val("");
+    });
+ });
+</script>
+</head>
+<body>
+<div id="dvHeader" class="row">
+<%- menu %>
+</div>
+
+<div style="text-align:center"><H1><font >PRODUITS</font></H1>
+Rayon<select id="rayon" style="margin-left:5px;margin-right:5px"></select><button class="btn btn-success action-new" value="Ajouter">+ Ajouter </button>
+
+</div>
+
+<div id="dvMiddle" class="row">
+
+	<div id="rowProduits" class="col-md-10" style="margin-left:100px;margin-top:20px;">
+		<table id="tblProduits" class="order-column" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                	<th>id</th>
+                    <th>nom</th>
+                    <th>type</th>
+                    <th>ref interne</th>
+                    <th>externe</th>
+                    <th>TTC achat</th>
+                    <th>H.T</th>
+                    <th>T.V.A</th>
+                    <th>Com (%)</th>
+                    <th>TTC vente</th>
+                    <th>icone</th>
+                    <th>lot</th>
+                    <th>action</th>
+                    <th>dispo</th>
+                    
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                	<th>id</th>
+                    <th>nom</th>
+                    <th>type</th>
+                    <th>ref interne</th>
+                    <th>externe</th>
+                    <th>TTC achat</th>
+                    <th>H.T</th>
+                    <th>T.V.A</th>
+                    <th>Com (%)</th>
+                    <th>TTC vente</th>
+                    <th>icone</th>
+                    <th>lot</th>
+                    <th>action</th>
+                    <th>dispo</th>
+                    
+                </tr>
+            </tfoot>
+	</div>
+</div>
+<div id="formModale" ></div>
+</body>
+</html>
