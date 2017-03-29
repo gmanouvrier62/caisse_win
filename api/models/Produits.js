@@ -92,21 +92,25 @@ module.exports = {
       var classifier = new BrainJSClassifier();
       sails.models.brain.find({}).exec(function(err,rs) {
         logger.warn("nb de bidules trouvés : ", rs.length);
-        if(err !== null && err !== undefined) {
-          logger.error("Erreur de récup brain : ", err);
-           return cb("0");
-        }
-        logger.warn("step recup ok");
-        for (var c = 0; c < rs.length; c++) {
-          if(rs[c].tape !== null && rs[c].tape !== undefined && rs[c].tape !== "" && rs[c].id_produit !== "" && rs[c].id_produit !== null && rs[c].id_produit !== undefined) {
-            logger.warn("va mettre : ", rs[c].tape, " avec ", rs[c].id_produit.toString());
-            classifier.addDocument(rs[c].tape, rs[c].id_produit.toString());
+        if (rs.length >0) {
+            if(err !== null && err !== undefined) {
+              logger.error("Erreur de récup brain : ", err);
+               return cb("0");
+            }
+            logger.warn("step recup ok");
+            for (var c = 0; c < rs.length; c++) {
+              if(rs[c].tape !== null && rs[c].tape !== undefined && rs[c].tape !== "" && rs[c].id_produit !== "" && rs[c].id_produit !== null && rs[c].id_produit !== undefined) {
+                logger.warn("va mettre : ", rs[c].tape, " avec ", rs[c].id_produit.toString());
+                classifier.addDocument(rs[c].tape, rs[c].id_produit.toString());
+              }
+            }
+            logger.warn("avant train");
+            classifier.train();
+            logger.warn("train ok, avant classify de ", crit.nom);
+            cb(classifier.classify(crit.nom));
+          } else {
+            cb();
           }
-        }
-        logger.warn("avant train");
-        classifier.train();
-        logger.warn("train ok, avant classify de ", crit.nom);
-        cb(classifier.classify(crit.nom));
       });
 
     };
@@ -120,7 +124,11 @@ module.exports = {
       
       //Attention ajout du classifier brain, faire passer le result en priorité
       if(tbCrit.length > 0) {
-        sql = "select * from caisse.produits where id in(" + ret + ") UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
+        if(ret !== null && ret !== undefined) {
+          sql = "select * from caisse.produits where id in(" + ret + ") UNION select * from caisse.produits where nom like '" + crit.nom + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
+        } else {
+          sql = "select * from caisse.produits where nom like '" + crit.nom + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
+        }
         console.log("DANS MODEL : ", sql);
         
         sails.models.produits.query(sql, function creaStat(err,result){
