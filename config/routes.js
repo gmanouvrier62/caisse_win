@@ -71,7 +71,7 @@ module.exports.routes = {
   '/commandes/dupliquer':               'CommandesController.dupliquer',
   '/commandes/get_commandes/:id_client': 'CommandesController.getCommandes',
   '/commandes/livrer':             'CommandesController.livrer',
-  '/commandes/print/:id':          'CommandesController.print',
+  '/commandes/print/':          'CommandesController.print',
   '/commandes/retirer_produit':      'CommandesController.retirer_produit',
   '/commandes/load/:id/client/:id_client':              'CommandesController.load',
   '/commandes/get/:id/client/:id_client' :              'CommandesController.getCommandeById',

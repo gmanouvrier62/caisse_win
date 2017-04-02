@@ -56,8 +56,10 @@ module.exports = {
 			var toCheck = "";
 			for(var c = 0; c < tb.length; c++) {
 				toCheck += tb[c] + '/';
+				logger.util("avant alors on veut creer : ", toCheck);
 				fs.mkdir(toCheck,function(e){
-				    if(!e || (e && e.code === 'EEXIST')){
+					logger.util("alors : ",e);
+				    if(!e || (e && (e.code === 'EEXIST' || e.code === 'EPERM'))){
 				        //do something with contents
 				    } else {
 					    fs.mkdirSync(toCheck,0777);
@@ -127,6 +129,8 @@ module.exports = {
 			//
 			logger.error('paiement ', fCom.paiement);
 			logger.error('ttl co ', fCom.total_commande);
+			logger.error('ttl co ', fCom.total_commande);
+			
 			
 			switch (fCom.paiement) {
 				case 'cb':
@@ -164,6 +168,7 @@ module.exports = {
 			if (fCom.produits.length < 13)
 				var content_file = '<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></head><body>' + template + '</html>';
 			var folderDay = moment().format("YYYY/MM/DD");
+			logger.error("avant checkfolder");
 			var fullFolderDay = checkFolder(sails.config.archive_facture + folderDay);
 			fs.writeFile(fullFolderDay + "id_" + fCom.id + "_" + moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0') + ".html", content_file, function (err) {
 		    	if (err) {
@@ -385,36 +390,36 @@ module.exports = {
 								ttc_externe: resultPr[0].ttc_externe
 							};
 							logger.util("ligne : ", ligne);
-						
-							sails.models.cmd_pr.findOrCreate(ligne,ligne).exec(function creaStat(err,created){
-								if(err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion d'un rpoduit dans une commande " + err, 'commande': null});
-							
-								//sur retour ok, on recupere la comm créé et on affiche le prix
-								sails.models.commandes.getOneFullCommande(idCmd, id_client, function(err, fCom) {
-									if (err !== null && err !== undefined) {
-										logger.error(err);
-										return res.send({'err': "Erreur de récupération de la commande", 'commande': null});
-									}
-									//logger.util(fCom);
-									var origine = { 'id': id_client};
-									var cible = { 
-										'current_avoir': avoir,
-										'current_debit': debit
-									};
-									sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-										logger.warn('alors update avoir ', updated);
+							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
+								sails.models.cmd_pr.findOrCreate(ligne,ligne).exec(function creaStat(err,created){
+									if(err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion d'un rpoduit dans une commande " + err, 'commande': null});
+								
+									//sur retour ok, on recupere la comm créé et on affiche le prix
+									sails.models.commandes.getOneFullCommande(idCmd, id_client, function(err, fCom) {
 										if (err !== null && err !== undefined) {
 											logger.error(err);
-											return res.send({'err': "Erreur de l'update client", 'commande': null});
+											return res.send({'err': "Erreur de récupération de la commande", 'commande': null});
 										}
-										fCom.client.current_avoir = avoir;
-										fCom.client.current_debit = debit;
-										
-										return res.send({'err': null,'commande': fCom});
+										//logger.util(fCom);
+										var origine = { 'id': id_client};
+										var cible = { 
+											'current_avoir': avoir,
+											'current_debit': debit
+										};
+										sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
+											logger.warn('alors update avoir ', updated);
+											if (err !== null && err !== undefined) {
+												logger.error(err);
+												return res.send({'err': "Erreur de l'update client", 'commande': null});
+											}
+											fCom.client.current_avoir = avoir;
+											fCom.client.current_debit = debit;
+											
+											return res.send({'err': null,'commande': fCom});
+										});
 									});
 								});
 							});
-
 
 						}.bind({'cpt': cpt}));
 					}
