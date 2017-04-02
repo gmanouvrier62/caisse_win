@@ -163,8 +163,8 @@ module.exports = {
 					template = template.replace(/@@TTL_TTC_AU@@/g, "");
 					template = template.replace(/@@TTL_TTC_ES@@/g, "");
 			}
-			var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
-			template += sepa + template;
+			//var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
+			//template += sepa + template;
 			if (fCom.produits.length < 13)
 				var content_file = '<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></head><body>' + template + '</html>';
 			var folderDay = moment().format("YYYY/MM/DD");
