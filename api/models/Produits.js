@@ -141,16 +141,16 @@ module.exports = {
       var tbCrit = [];
       var extra = "";
       if (crit.nom !== null && crit.nom !== undefined) {
-        tbCrit.push("nom like '" + crit.nom + "%' "); 
-        extra = " UNION select * from  caisse.produits where nom like '%" + crit.nom + "%' ";
+        tbCrit.push("nom like '" + crit.nom.replace("'","''") + "%' "); 
+        extra = " UNION select * from  caisse.produits where nom like '%" + crit.nom.replace("'","''") + "%' ";
       } 
       
       //Attention ajout du classifier brain, faire passer le result en priorité
       if(tbCrit.length > 0) {
         if(ret !== null && ret !== undefined) {
-          sql = "select * from caisse.produits where id in(" + ret + ") UNION select * from caisse.produits where nom like '" + crit.nom + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
+          sql = "select * from caisse.produits where id in(" + ret + ") UNION select * from caisse.produits where nom like '" + crit.nom.replace("'","''") + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
         } else {
-          sql = "select * from caisse.produits where nom like '" + crit.nom + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
+          sql = "select * from caisse.produits where nom like '" + crit.nom.replace("'","''") + "%' UNION select * from  caisse.produits where " + tbCrit.join(" and ") + extra;
         }
         console.log("DANS MODEL : ", sql);
         

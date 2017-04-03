@@ -27,7 +27,7 @@ module.exports = function(callback){
 			sql += "from cmd_pr cp inner join commandes c on c.id=cp.id_commande ";
 			sql += "inner join produits pr on pr.id=cp.id_produit ";
 			sql += "inner join typesproduits t on t.id=pr.id_type ";
-			sql += "where c.status = 2 group by id_produit";
+			sql += "where c.status = 1 group by id_produit";
 		logger.warn(sql);
 		sails.models.cmd_pr.query(sql, function(err, lignes) {
 			if(err !== null && err !== undefined) return callback(err,null);

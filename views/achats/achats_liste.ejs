@@ -23,6 +23,7 @@
 
 
 $(function(){
+    console.log("ok");
 function impression(content){
     var fen = window.open("", "", "height=500, width=600,toolbar=0, menubar=0, scrollbars=1, resizable=1,status=0, location=0, left=10, top=10");
      
@@ -98,8 +99,8 @@ var tIndex = 0;
             { "className": "col_std", "targets": [ 5 ] },
             { "className": "col_std", "targets": [ 6 ] },
             { "className": "col_std", "targets": [ 7 ] },
-            { "className": "col_xl", "targets": [ 8 ] },
-            { "visible": false,  "targets": [5] },
+            { "className": "col_xl", "targets": [ 8 ] }
+            
         ],
         "oLanguage": {"sZeroRecords": "", "sEmptyTable": "<b>Pas de produits achetés</b>"},
         "processing": false,
@@ -158,13 +159,15 @@ var tIndex = 0;
         var st = "style='border: 1px solid black; padding: 2px; margin-left:3px;margin-right:3px'";
         var template = "<table " + st + " id='tblPrint'><thead><tr><th>Ref</th><th>Désignation</th><th>Quantité</th></tr></thead><tbody><tr><td></td><td></td><td></td></tr>";
         var ligne = "";
+        console.log("dans print avant foreach des dispo");
         $(".ftDispo").each(function(){
-            if( $(this).html() != 'null' && parseInt($(this).html()) > 0 ) {
+            console.log("ct : ", parseInt($(this).html()));
+            //if( $(this).html() != 'null' && parseInt($(this).html()) > 0 ) {
                 var idp = $(this).data('id');
                 var nom = $(this).parent().parent().find('.prNom').html();
                 var qte = $(this).data('qte');
                 ligne += "<tr ><td " + st + ">" + idp + "</td><td " + st + ">" + nom + "</td><td " + st + ">" + qte + "</td></tr>";
-            } 
+            //} 
         });
         impression(template + ligne + "</table>");
     });
