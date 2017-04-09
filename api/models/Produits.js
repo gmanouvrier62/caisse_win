@@ -112,6 +112,13 @@ module.exports = {
   getAllCrit: function(crit, callback) {
     
     var Getpertinent = function(crit, cb) {
+      
+
+      //Hook bypass classifier
+      return cb();
+      ////////////////////////
+
+
       var classifier = new BrainJSClassifier();
       sails.models.brain.find({}).exec(function(err,rs) {
         logger.warn("nb de bidules trouvés : ", rs.length);

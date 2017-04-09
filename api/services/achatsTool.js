@@ -12,7 +12,7 @@ module.exports = function(callback){
 	        var resultat = parseFloat(ttc_achat) /(1 + (parseFloat(tva)/100) );
 	        return Math.round(resultat *100)/100;
         }
-//Rappel : on ne prend que les commandes en status 2 (validées)
+//Rappel : on ne prend que les commandes en status 1 (crea)
 		var sql = "select sum(cp.qte) as quantite, ";
 			sql += "cp.id_produit, ";
 			sql += "pr.nom, ";

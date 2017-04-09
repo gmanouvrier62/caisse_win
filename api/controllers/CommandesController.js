@@ -103,17 +103,17 @@ module.exports = {
 			template = template.replace(/@@VILLE@@/g, fCom.client.ville);
 			template = template.replace(/@@TEL@@/g, fCom.client.tel);
 			template = template.replace(/@@MOBILE@@/g, fCom.client.mobile);
-			logger.error("putain de date : ", fCom.dt_creation);
+			//logger.error("putain de date : ", fCom.dt_creation);
 			template = template.replace(/@@ID_COMMANDE@@/g, moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0'));
 			template = template.replace(/@@MODE_PAIEMENT@@/g, fCom.paiement);
 			template = template.replace(/@@DT_LIVRAISON@@/g, moment(fCom.dt_livraison).format("DD-MM-YYYY"));
 			var content = "";
 			
-			var s = 'style="font-size: 9px;border-left:1px solid black;border-right:1px solid black"';
-			var s2 = 'style="font-size: 9px;border-left:1px solid black;border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black"';
+			var s = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black"';
+			var s2 = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black"';
 			for (var c = 0; c < fCom.produits.length; c++) {
 				var prd = fCom.produits[c];
-				content += "<tr><td " + s +">" + prd.ref_interne  + "</td><td " + s + ">" + prd.nom.minified() + "</td><td " + s + ">" + prd.qte + "</td><td " + s + ">" + prd.pu + "</td><td " + s +">" + prd.ttc + "</td></tr>";
+				content += "<tr><td " + s +">" + prd.ref_interne  + "</td><td " + s + ">" + prd.nom + "</td><td " + s + ">" + prd.qte + "</td><td " + s + ">" + prd.pu + "</td><td " + s +">" + prd.ttc + "</td></tr>";
 				
 			}
 		
@@ -163,9 +163,11 @@ module.exports = {
 					template = template.replace(/@@TTL_TTC_AU@@/g, "");
 					template = template.replace(/@@TTL_TTC_ES@@/g, "");
 			}
-			//var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
-			//template += sepa + template;
-			if (fCom.produits.length < 13)
+			if(fCom.produits.length < 14) {
+				var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
+				template += sepa + template;
+			}
+			if (fCom.produits.length < 14)
 				var content_file = '<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></head><body>' + template + '</html>';
 			var folderDay = moment().format("YYYY/MM/DD");
 			logger.error("avant checkfolder");
