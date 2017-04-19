@@ -1,0 +1,10 @@
+pour modification des tva
+select commandes.id, cmd_pr.id_produit,produits.nom, cmd_pr.tva tva_CMD, produits.tva tva_PRD, produits.pht HT_PRD, cmd_pr.pht HT_CMD from commandes inner join cmd_pr on cmd_pr.id_commande=commandes.id inner join produits on produits.id=cmd_pr.id_produit where commandes.id=13;
+/*
+update cmd_pr
+set cmd_pr.pht = (select produits.pht from
+  produits where cmd_pr.id_produit = produits.id), cmd_pr.tva = (select produits.tva from
+  produits where cmd_pr.id_produit = produits.id) where cmd_pr.id_commande=13
+
+*/
+

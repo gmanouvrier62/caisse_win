@@ -109,6 +109,15 @@ module.exports = {
 
     });
   },
+  recalculationCommande: function(id_commande, callback) {
+    //ATTENTION, utiliser cette fonction modifie les tx de tva déjà appliqués par le passé
+    var sql = "update cmd_pr set cmd_pr.pht = (select produits.pht from produits where cmd_pr.id_produit = produits.id), ";
+    sql += " cmd_pr.tva = (select produits.tva from produits where cmd_pr.id_produit = produits.id) where cmd_pr.id_commande=" + id_commande;
+    sails.models.commandes.query(sql, function(err, rs) {
+      if (err !== null && err !== undefined) return callback(err);
+      callback();
+    });
+  },
   getOneFullCommande: function(id_commande, id_client, callback) {
   	var roundDecimal = function(nombre, precision){
       var precision = precision || 2;

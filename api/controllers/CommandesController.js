@@ -87,109 +87,114 @@ module.exports = {
 		var id_client = req.body.id_client;
 		if(idCmd == null || idCmd == undefined) return res.send({'err': 'pas de numéro de commande'});
 		if(id_client == null || id_client == undefined) return res.send({'err': 'pas de numéro de client'});
-		
-		sails.models.commandes.getOneFullCommande(idCmd, id_client, function(err, fCom) {
-			logger.util("method print : ", fCom);
-			if (err !== null && err !== undefined) {
-				logger.error(err);
-				return res.send({'err': "Erreur de récupération de la commande"});
+		sails.models.commandes.recalculationCommande(idCmd, function(err) {
+			if (err) {
+				logger.error({'err': err});
+				return res.send({'err de recalcul': err});
 			}
-			
-			var template = fs.readFileSync(sails.config.template_commande).toString();
-			template = template.replace(/@@PRENOM@@/g, fCom.client.prenom);
-			template = template.replace(/@@NOM@@/g, fCom.client.nom);
-			template = template.replace(/@@ADRESSE@@/g, fCom.client.adresse);
-			template = template.replace(/@@CP@@/g, fCom.client.cp);
-			template = template.replace(/@@VILLE@@/g, fCom.client.ville);
-			template = template.replace(/@@TEL@@/g, fCom.client.tel);
-			template = template.replace(/@@MOBILE@@/g, fCom.client.mobile);
-			//logger.error("putain de date : ", fCom.dt_creation);
-			template = template.replace(/@@ID_COMMANDE@@/g, moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0'));
-			template = template.replace(/@@MODE_PAIEMENT@@/g, fCom.paiement);
-			template = template.replace(/@@DT_LIVRAISON@@/g, moment(fCom.dt_livraison).format("DD-MM-YYYY"));
-			var content = "";
-			
-			var s = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black"';
-			var s2 = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black"';
-			for (var c = 0; c < fCom.produits.length; c++) {
-				var prd = fCom.produits[c];
-				content += "<tr><td " + s +">" + prd.ref_interne  + "</td><td " + s + ">" + prd.nom + "</td><td " + s + ">" + prd.qte + "</td><td " + s + ">" + prd.pu + "</td><td " + s +">" + prd.ttc + "</td></tr>";
-				
-			}
-		
-			template = template.replace(/@@CONTENT@@/g, content);
-			template = template.replace(/@@TTL_ARTICLES@@/g, fCom.ttlArticles);
-			template = template.replace(/@@TTL_TTC@@/g, fCom.total_commande);
-			template = template.replace(/@@TTL_HT@@/g, parseInt(fCom.total_ht * 100) / 100);
-			//TVAs
-			template = template.replace(/@@TTL_TVA_5.5@@/g, fCom.total_tva['5.5']);
-			template = template.replace(/@@TTL_TVA_10@@/g, fCom.total_tva['10']);
-			template = template.replace(/@@TTL_TVA_20@@/g, fCom.total_tva['20']);
-			
-			//
-			logger.error('paiement ', fCom.paiement);
-			logger.error('ttl co ', fCom.total_commande);
-			logger.error('ttl co ', fCom.total_commande);
-			
-			
-			switch (fCom.paiement) {
-				case 'cb':
-					template = template.replace(/@@TTL_TTC_ES@@/g, "");
-					template = template.replace(/@@TTL_TTC_CH@@/g, "");
-					template = template.replace(/@@TTL_TTC_CB@@/g, fCom.total_commande);
-					template = template.replace(/@@TTL_TTC_PR@@/g, "");
-					template = template.replace(/@@TTL_TTC_AU@@/g, "");
-					break;
-				case 'chèque': 
-					template = template.replace(/@@TTL_TTC_ES@@/g, "");
-					var txtCheque = fCom.total_commande;
-					if (fCom.dt_paiement != "") txtCheque += " (différé au " + fCom.dt_paiement + ")";
-					template = template.replace(/@@TTL_TTC_CH@@/g, txtCheque);
-					template = template.replace(/@@TTL_TTC_CB@@/g, "");
-					template = template.replace(/@@TTL_TTC_PR@@/g, "");
-					template = template.replace(/@@TTL_TTC_AU@@/g, "");
-					break;
-				case 'espèce':
-					template = template.replace(/@@TTL_TTC_CH@@/g, "");
-					template = template.replace(/@@TTL_TTC_CB@@/g, "");
-					template = template.replace(/@@TTL_TTC_PR@@/g, "");
-					template = template.replace(/@@TTL_TTC_AU@@/g, "");
-					template = template.replace(/@@TTL_TTC_ES@@/g, fCom.total_commande);
-					break;
-				default:
-					template = template.replace(/@@TTL_TTC_CH@@/g, "");
-					template = template.replace(/@@TTL_TTC_CB@@/g, "");
-					template = template.replace(/@@TTL_TTC_PR@@/g, "");
-					template = template.replace(/@@TTL_TTC_AU@@/g, "");
-					template = template.replace(/@@TTL_TTC_ES@@/g, "");
-			}
-			if(fCom.produits.length < 14) {
-				var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
-				template += sepa + template;
-			}
-			if (fCom.produits.length < 14)
-				var content_file = '<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></head><body>' + template + '</html>';
-			var folderDay = moment().format("YYYY/MM/DD");
-			logger.error("avant checkfolder");
-			var fullFolderDay = checkFolder(sails.config.archive_facture + folderDay);
-			fs.writeFile(fullFolderDay + "id_" + fCom.id + "_" + moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0') + ".html", content_file, function (err) {
-		    	if (err) {
-		    		logger.error({'err': err});
-		    		return res.send({'err': err});
-		    	}
-		    	if (fCom.status !== 4 && fCom.status !== 'Livrée') {
-			    	sails.models.commandes.valider(fCom.id, req.body.id_client, function(err, result) {
-						if (err !== null && err !== undefined) {
-							return res.send({'err': 'pb de validation de commande','validation': null})
-						}
-						return res.send({'err':null, 'content': template});
-					});
-				} else {
-					return res.send({'err':null, 'content': template});//plus de validation car déjà validée
+			sails.models.commandes.getOneFullCommande(idCmd, id_client, function(err, fCom) {
+				logger.util("method print : ", fCom);
+				if (err !== null && err !== undefined) {
+					logger.error(err);
+					return res.send({'err': "Erreur de récupération de la commande"});
 				}
-    		});
+				
+				var template = fs.readFileSync(sails.config.template_commande).toString();
+				template = template.replace(/@@PRENOM@@/g, fCom.client.prenom);
+				template = template.replace(/@@NOM@@/g, fCom.client.nom);
+				template = template.replace(/@@ADRESSE@@/g, fCom.client.adresse);
+				template = template.replace(/@@CP@@/g, fCom.client.cp);
+				template = template.replace(/@@VILLE@@/g, fCom.client.ville);
+				template = template.replace(/@@TEL@@/g, fCom.client.tel);
+				template = template.replace(/@@MOBILE@@/g, fCom.client.mobile);
+				//logger.error("putain de date : ", fCom.dt_creation);
+				template = template.replace(/@@ID_COMMANDE@@/g, moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0'));
+				template = template.replace(/@@MODE_PAIEMENT@@/g, fCom.paiement);
+				template = template.replace(/@@DT_LIVRAISON@@/g, moment(fCom.dt_livraison).format("DD-MM-YYYY"));
+				var content = "";
+				
+				var s = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black"';
+				var s2 = 'style="font-size: 14px;border-left:1px solid black;border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black"';
+				for (var c = 0; c < fCom.produits.length; c++) {
+					var prd = fCom.produits[c];
+					content += "<tr><td " + s +">" + prd.ref_interne  + "</td><td " + s + ">" + prd.nom + "</td><td " + s + ">" + prd.qte + "</td><td " + s + ">" + prd.pu + "</td><td " + s +">" + prd.ttc + "</td></tr>";
+					
+				}
 			
-		});	
+				template = template.replace(/@@CONTENT@@/g, content);
+				template = template.replace(/@@TTL_ARTICLES@@/g, fCom.ttlArticles);
+				template = template.replace(/@@TTL_TTC@@/g, fCom.total_commande);
+				template = template.replace(/@@TTL_HT@@/g, parseInt(fCom.total_ht * 100) / 100);
+				//TVAs
+				template = template.replace(/@@TTL_TVA_5.5@@/g, fCom.total_tva['5.5']);
+				template = template.replace(/@@TTL_TVA_10@@/g, fCom.total_tva['10']);
+				template = template.replace(/@@TTL_TVA_20@@/g, fCom.total_tva['20']);
+				
+				//
+				logger.error('paiement ', fCom.paiement);
+				logger.error('ttl co ', fCom.total_commande);
+				logger.error('ttl co ', fCom.total_commande);
+				
+				
+				switch (fCom.paiement) {
+					case 'cb':
+						template = template.replace(/@@TTL_TTC_ES@@/g, "");
+						template = template.replace(/@@TTL_TTC_CH@@/g, "");
+						template = template.replace(/@@TTL_TTC_CB@@/g, fCom.total_commande);
+						template = template.replace(/@@TTL_TTC_PR@@/g, "");
+						template = template.replace(/@@TTL_TTC_AU@@/g, "");
+						break;
+					case 'chèque': 
+						template = template.replace(/@@TTL_TTC_ES@@/g, "");
+						var txtCheque = fCom.total_commande;
+						if (fCom.dt_paiement != "") txtCheque += " (différé au " + fCom.dt_paiement + ")";
+						template = template.replace(/@@TTL_TTC_CH@@/g, txtCheque);
+						template = template.replace(/@@TTL_TTC_CB@@/g, "");
+						template = template.replace(/@@TTL_TTC_PR@@/g, "");
+						template = template.replace(/@@TTL_TTC_AU@@/g, "");
+						break;
+					case 'espèce':
+						template = template.replace(/@@TTL_TTC_CH@@/g, "");
+						template = template.replace(/@@TTL_TTC_CB@@/g, "");
+						template = template.replace(/@@TTL_TTC_PR@@/g, "");
+						template = template.replace(/@@TTL_TTC_AU@@/g, "");
+						template = template.replace(/@@TTL_TTC_ES@@/g, fCom.total_commande);
+						break;
+					default:
+						template = template.replace(/@@TTL_TTC_CH@@/g, "");
+						template = template.replace(/@@TTL_TTC_CB@@/g, "");
+						template = template.replace(/@@TTL_TTC_PR@@/g, "");
+						template = template.replace(/@@TTL_TTC_AU@@/g, "");
+						template = template.replace(/@@TTL_TTC_ES@@/g, "");
+				}
+				if(fCom.produits.length < 14) {
+					var sepa = "<br>------------------------------------------------------------------------------------------------------------------------<br>";
+					template += sepa + template;
+				}
+				if (fCom.produits.length < 14)
+					var content_file = '<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></head><body>' + template + '</html>';
+				var folderDay = moment().format("YYYY/MM/DD");
+				logger.error("avant checkfolder");
+				var fullFolderDay = checkFolder(sails.config.archive_facture + folderDay);
+				fs.writeFile(fullFolderDay + "id_" + fCom.id + "_" + moment(fCom.dt_creation).format("YYYYMMDD") + pad(5,fCom.position,'0') + ".html", content_file, function (err) {
+					if (err) {
+						logger.error({'err': err});
+						return res.send({'err': err});
+					}
+					if (fCom.status !== 4 && fCom.status !== 'Livrée') {
+						sails.models.commandes.valider(fCom.id, req.body.id_client, function(err, result) {
+							if (err !== null && err !== undefined) {
+								return res.send({'err': 'pb de validation de commande','validation': null})
+							}
+							return res.send({'err':null, 'content': template});
+						});
+					} else {
+						return res.send({'err':null, 'content': template});//plus de validation car déjà validée
+					}
+				});
+				
+			});	
+		});
 	},
 	getCommandeById: function(req, res) {
 		logger.warn(sails.config.appPath);
