@@ -86,7 +86,15 @@ $(function(){
     } 
     $("#megaSearch").val("");         
   }
+  function searchCurrentClientProducts(curId) {
+        currentClient = curId;
+        rechercheClient(currentClient);
 
+        clientsProducts = "/produits/distinct/" + currentClient;
+        console.log("requete de recherche par default : ", clientsProducts);
+        globalTable.ajax.url(clientsProducts).load();
+
+  }
   function AjouterUneLigne(obj,state) {
      var produit_ligne = "<tr class='rawContent' data-id='" +  obj.index_ligne + "'>";
           produit_ligne += "<td class='rayon_pr'>" +  obj.rayon  + "</td>";
@@ -156,6 +164,7 @@ $(function(){
           }
           
         }
+   
     //affichage du choix du rayon dans la modal des choix de produit
     $.get('/produits/types/list',{}, function(datas){
           
@@ -202,12 +211,7 @@ $(function(){
       
     }
       $("#slClient").change(function() {
-      	currentClient = $(this).val();
-      	rechercheClient(currentClient);
-
-        clientsProducts = "/produits/distinct/" + currentClient;
-        console.log("requete de recherche par default : ", clientsProducts);
-        globalTable.ajax.url(clientsProducts).load();
+      	searchCurrentClientProducts($(this).val());
         
       });
     });
@@ -236,8 +240,11 @@ $(function(){
     });
      //affichage de la modale choix produit
      $('body').on('click', 'button.action-newL', function (event) {
-       
        var table = $("#tblCommande");
+       if(currentIdClient !== "" && currentIdClient !== null && currentIdClient !== undefined) {
+          searchCurrentClientProducts(currentIdClient);
+       }
+      
        
        //Affichage de la modale choix produit       
        $("#dvChoixPr").css('display','block');

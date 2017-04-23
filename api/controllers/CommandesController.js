@@ -100,6 +100,8 @@ module.exports = {
 				}
 				
 				var template = fs.readFileSync(sails.config.template_commande).toString();
+				template = template.replace(/@@DATE@@/g, moment(fCom.dt_creation).format("DD-MM-YYYY"));
+				
 				template = template.replace(/@@PRENOM@@/g, fCom.client.prenom);
 				template = template.replace(/@@NOM@@/g, fCom.client.nom);
 				template = template.replace(/@@ADRESSE@@/g, fCom.client.adresse);
