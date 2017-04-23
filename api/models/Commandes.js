@@ -69,7 +69,7 @@ module.exports = {
     }
     
     var sql = "select c.id as idc, ";
-      sql += "c.status as id_status, ";
+      sql += "c.status as id_status, c.createdAt createdAt, ";
       sql += "st.nom_status as nom_status, ";
       sql += "clt.id as id_client, ";
       sql += "clt.nom as nom, ";
@@ -84,7 +84,7 @@ module.exports = {
       sql += "inner join status_commande st on st.id = c.status where ";
       sql += tbCritere.join(' and ');
 
-    logger.warn('go requete: ', sql);
+    //logger.warn('go requete: ', sql);
     sails.models.commandes.query(sql, function(err, datas){
       if (err !== null && err !== undefined) return callback(err, null);
       var retour = [];
@@ -102,9 +102,11 @@ module.exports = {
         ligne.push(datas[c].ville);
         ligne.push(moment(datas[c].dt_livraison).format("DD-MM-YYYY"));
         ligne.push(datas[c].id_client);
+        ligne.push(datas[c].createdAt);
+        
         retour.push(ligne);
       }
-      logger.warn('avant cback nb commande: ', retour.length);
+      //logger.warn('avant cback nb commande: ', retour.length);
       callback(null, retour);
 
     });
@@ -141,7 +143,7 @@ module.exports = {
   		total_commande: 0.00
 
   	};
-    logger.warn("!debut fct : ", fullCommande.total_tva['5.5']);
+    //logger.warn("!debut fct : ", fullCommande.total_tva['5.5']);
         
 	  //rajouter nom, ref_interne et externe
   	var sql = "select c.id cid, st.nom_status cstatus, c.dt_livraison dt_livraison, c.createdAt dt_creation,  c.paiement paiement, cp.qte qte, c.dt_paiement, c.position, ";
@@ -162,17 +164,16 @@ module.exports = {
   		sql += " inner join status_commande st on st.id=c.status ";
   		sql += " where c.id=" + id_commande;
   		sql += " and c.id_client=" + id_client + " order by c.id";
-    logger.warn(sql);
+    //logger.warn(sql);
     sails.models.clients.find({"id": id_client}, function (err, clt) {
-    	logger.warn("!debut client : ", id_client, "  = ", fullCommande.total_tva['5.5']);
-       
+    	    
       if (err !== null) return callback("pb de récupération client", null);
     	if (clt == null || clt == undefined) return callback("Le client n'existe pas", null);
     	fullCommande.client = clt[0];
     	sails.models.commandes.query(sql, function(err, commandes) {
   			if (err !== null && err !== undefined)  return callback("pb de récupération des produits d'une commande", null);
   			if (commandes == null || commandes == undefined) return callback("La commande est vide", null);			
-  			logger.warn("remplissage des produits : ", commandes.length);
+  			//logger.warn("remplissage des produits : ", commandes.length);
   			var ttlArticles = 0;
         for(var c = 0; c < commandes.length; c++) { 
   				fullCommande.id = commandes[0].cid;
@@ -202,13 +203,13 @@ module.exports = {
           produit.idr = commandes[c].idr;
           produit.pht = commandes[c].ht;//achat
           var coeffCom = (100 - commandes[c].tx_com) / 100;
-          logger.warn("coeffcom : ", coeffCom);
+          //logger.warn("coeffcom : ", coeffCom);
           produit.client_ht = parseInt((produit.pht / coeffCom) * 100)/100;
           produit.tx_com = commandes[c].tx_com;
           //TODO A checker par precaution avec Christophe
-          logger.error("client_ht : ", produit.client_ht);
-          logger.error("ht : ", produit.pht);
-          logger.error("soutract client_ht-pht= ", produit.client_ht - produit.pht);
+          //logger.error("client_ht : ", produit.client_ht);
+          //logger.error("ht : ", produit.pht);
+          //logger.error("soutract client_ht-pht= ", produit.client_ht - produit.pht);
           produit.commission = produit.client_ht - produit.pht;
           produit.ttl_com = produit.commission * produit.qte;//Comm totale
           produit.ttl_com = roundDecimal(produit.ttl_com,2);
@@ -216,7 +217,7 @@ module.exports = {
           produit.tva = produit.client_ht * (produit.tx_tva / 100);
            
           produit.ttl_tva = produit.tva * produit.qte;
-          logger.error("produit ", produit.nom, " : ", produit.tva, " ttl : ", produit.ttl_tva);    
+          //logger.error("produit ", produit.nom, " : ", produit.tva, " ttl : ", produit.ttl_tva);    
   				fullCommande.total_commande += produit.ttc;
           fullCommande.total_commande = roundDecimal(fullCommande.total_commande, 2);
          
@@ -231,8 +232,8 @@ module.exports = {
   			}
         fullCommande.ttlArticles = ttlArticles;
         fullCommande.total_ht = roundDecimal(fullCommande.total_ht, 2);
-        logger.warn('ready to back');
-        logger.error("fullCommande final", fullCommande.produits);
+        //logger.warn('ready to back');
+        //logger.error("fullCommande final", fullCommande.produits);
         //fullCommande.total_commande = sails.models.commandes.arrondi(fullCommande.total_commande);
   			callback(null,fullCommande);
       });
