@@ -1,0 +1,5 @@
+//calcul du pht depuis ttc externe et application en base
+update cmd_pr set pht = CAST((ttc_externe/((tva/100)+1))*100 AS INT)/ 100
+
+//query facturations
+select day(createdAt), tva, CAST(sum(qte*pht)*100 as INTEGER)/100 as pht_ttl from cmd_pr where createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' group by day(createdAt), tva 

@@ -30,7 +30,25 @@ module.exports = {
 
 		return res.render ('chiffres/ventes',{'action': 'stats', 'periode': periode, 'd1': debut, 'd2': fin, 'menu': menu});
 	},
+	facturation: function(req, res) {
+		var annee = req.params.annee;
+		var mois = req.params.mois;
+		mois = mois< 10?'0' + mois:mois;
 
+		var debut = moment(annee + "-" + mois + "01").format("YYYY-MM-DD HH:mm:ss");
+		var fin = moment(annee + "-" + mois + "01").add(1,'M').format("YYYY-MM-DD HH:mm:ss");
+		var sql = "select day(createdAt), tva, CAST(sum(qte*pht)*100 as INTEGER)/100 as pht_ttl from cmd_pr where createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' group by day(createdAt), tva"; 
+		logger.warn("sql : ", sql);	
+		sails.models.cmd_pr.query(sql, function(err, results){
+			if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
+			for (var c = 0; c < results.length; c++) {
+
+
+
+			}
+		});
+
+	},
 	ventes_jour: function (req, res) {
 		var roundDecimal = function(nombre, precision){
 	      var precision = precision || 2;

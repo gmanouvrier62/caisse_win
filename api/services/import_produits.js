@@ -55,19 +55,23 @@ module.exports = function(sck,callback){
 			'id_produit': id_produit,
 			'id_type': id_type,
 			'id_vignette': id_vignette,
-			'id_vignette': id_vignette,
 			'status': 0
 		};
 		//Tiens à faire voir à Stéphane
 		sails.models.images_web.findOne(crit, function(err, result) {
 			if (err !== null && err !== undefined) {
 				logger.error("erreur de récup d'une image : ", err);
+				process.exit();
 				return callback(err,null);	
 			} 
 			if(result) {
+				logger.warn("image crit : ", crit);
+				logger.warn("image vls : ", values);
+				
 				sails.models.images_web.update(crit, values, function(err, updated) {
 					if (err !== null && err !== undefined) {
 						logger.error("erreur update image : ", err);
+						process.exit();
 						return callback (err, null);
 					}
 					else
@@ -78,6 +82,7 @@ module.exports = function(sck,callback){
 					if (err !== null && err !== undefined) {
 						logger.util("values tried : ", this.valu);
 						logger.error("erreur ajout image : ", err);
+						process.exit();
 						return callback (err, null);
 					}
 					else
@@ -107,13 +112,12 @@ module.exports = function(sck,callback){
 			prd.nom = currentP.sLibelleLigne1 + ", " + currentP.sLibelleLigne2;
 			prd.id_type = currentP.iIdFamille;
 			prd.ref_interne = "";
-			prd.tva = 5.5;
+			//prd.tva = 5.5;
 			prd.ref_externe = currentP.iIdProduit.toString();
-			prd.pht =  calculHT(currentP.nrPVBRIIDeduit,prd.tva);
-			
+						
 			prd.ttc_externe = currentP.nrPVBRIIDeduit ;
-			prd.tx_com = 30;
-			prd.ttc_vente = calculPV(prd.pht, prd.tx_com, prd.tva);
+			//prd.tx_com = 30;
+			
 			var urlVignette = imgName;
 			var tbP = urlVignette.split('/');
 			prd.icone = tbP[tbP.length-1];
@@ -124,11 +128,12 @@ module.exports = function(sck,callback){
 			sails.models.produits.rayonExiste(prd.id_type,null, function(err) {
 				sails.models.produits.findOne({'ref_externe': prd.ref_externe}).exec(function(err,results) {
 				  if (!err) {
-				  	logger.util("le result : ", results);
+				  	//logger.util("le result : ", results);
 				  	if(results == null || results == undefined) {
 				  		//C'est une création
 						//logger.util("prd : ", prd);
-						
+						prd.tva = 5.5;
+						prd.tx_com = 30;
 						sails.models.produits.findOrCreate(prd,prd).exec(function creaStat(err,created){
 							if (err !== null && err !== undefined) {
 							 	logger.warn("il y aurait une err : ", err);
@@ -144,15 +149,22 @@ module.exports = function(sck,callback){
 						});
 				  	} else {
 				  		//C'est un update
+				  		//logger.warn("ok update prd existant");
 				  		delete prd.icone;//Je ne prends pas en compte les images 
 				  		var datasInitial = {ref_externe: prd.ref_externe};
+				  		//logger.warn("results : ", results);
+						prd.pht =  calculHT(currentP.nrPVBRIIDeduit,results.tva);
+
+						prd.ttc_vente = calculPV(prd.pht, results.tx_com, results.tva);
+						//logger.warn("!!!!! pht, tva : ", prd.ht, ", ", prd.tva);
 				  		sails.models.produits.update(datasInitial,prd).exec(function creaStat(err,updated){
 							
 							if (err !== null && err !== undefined) {
 								logger.warn(err);
+								
 								return callback(err);
 							} 
-							logger.util("updated prd: ", updated);
+							//logger.util("updated prd: ", updated);
 
 							saveAnImage(fullImgUrl, updated[0].id, idImage, updated[0].id_type, function(err, saved) {
 								if(err !== null && err !== undefined) return callback({'err':err, current_url: null});

@@ -83,6 +83,7 @@ module.exports.routes = {
   '/chiffres/ventes/:periode':             'StatsController.home',
   '/chiffres/ventes/:periode/:debut/:fin':  'StatsController.home',
   '/chiffres/ventes_jour':        'StatsController.ventes_jour' ,
+  '/chiffres/facturation/:annee/:mois':       'StatsController.facturation',
   '/factures/view':              'FacturesController.home'
   
   /***************************************************************************
