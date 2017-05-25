@@ -396,7 +396,14 @@ module.exports = {
 								tva: resultPr[0].tva,
 								tx_com: resultPr[0].tx_com,
 								ttc_vente: resultPr[0].ttc_vente,
-								ttc_externe: resultPr[0].ttc_externe
+								ttc_externe: resultPr[0].ttc_externe,
+								ref_externe:  resultPr[0].ref_externe,
+								ref_interne:  resultPr[0].ref_interne,
+								promo:  resultPr[0].promo,
+								nom:  resultPr[0].nom,
+								icone:  resultPr[0].icone,
+								conditionnement:  resultPr[0].conditionnement,
+								id_fournisseur:  resultPr[0].id_fournisseur
 							};
 							logger.util("ligne : ", ligne);
 							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
