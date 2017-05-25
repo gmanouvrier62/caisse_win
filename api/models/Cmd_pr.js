@@ -9,6 +9,15 @@ module.exports = {
 
     id_produit: { type: 'int' },
 
+    id_fournisseur: { type: 'int' },
+    promo: { type: 'int' },
+    conditionnement: { type: 'string' },
+    nom: { type: 'string' },
+    icone: { type: 'string' },
+    ref_interne: { type: 'string' },
+    ref_externe: { type: 'string' },
+    
+
     qte: {type: 'int'},
     qte_ok: {type: 'int'},
     histo_qte: {type: 'int'},
