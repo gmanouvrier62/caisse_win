@@ -31,7 +31,8 @@ module.exports = {
     tx_com: {type: 'decimal'},
         
     ttc_externe: {type: 'decimal'},
-    ttc_vente: {type: 'decimal'}
+    ttc_vente: {type: 'decimal'},
+    idr: {type: 'int'}
 
   },
   ventes_jour: function(d1,d2, callback) {
@@ -39,8 +40,8 @@ module.exports = {
     //A REVOIR PB On ne doit pas regarder dans la table produit mais se baser sur les prix de cmd_pr 
     //car ils restent fixes
   	var sql = "select * from cmd_pr cp inner join commandes c on ";
-  		sql += "c.id=cp.id_commande inner join produits p on ";
-  		sql += "p.id = cp.id_produit where c.status = 4 and c.dt_livraison between '" + d1 + "' and ";
+  		sql += "c.id=cp.id_commande ";
+  		sql += " where c.status = 4 and c.dt_livraison between '" + d1 + "' and ";
   		sql += "'" + d2 + "' order by id_client";
   	logger.warn("sql : " + sql);
   	this.query(sql, function(err,results) {

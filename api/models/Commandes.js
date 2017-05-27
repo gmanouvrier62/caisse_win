@@ -157,10 +157,9 @@ module.exports = {
       sql += "cp.pht ht, ";
       sql += "cp.tx_com tx_com, ";
       sql += "cp.tva tx_tva, ";
-  		sql += "r.nom rayon, r.id idr ";
+  		sql += "r.nom rayon, cp.idr ";
   		sql += " from commandes c inner join cmd_pr cp on c.id=cp.id_commande ";
-  		sql += " inner join produits p on p.id=cp.id_produit ";
-  		sql += " inner join typesproduits r on r.id=p.id_type ";
+  		sql += " inner join typesproduits r on r.id=cp.idr ";
   		sql += " inner join status_commande st on st.id=c.status ";
   		sql += " where c.id=" + id_commande;
   		sql += " and c.id_client=" + id_client + " order by c.id";
@@ -171,7 +170,7 @@ module.exports = {
     	if (clt == null || clt == undefined) return callback("Le client n'existe pas", null);
     	fullCommande.client = clt[0];
     	sails.models.commandes.query(sql, function(err, commandes) {
-  			if (err !== null && err !== undefined)  return callback("pb de récupération des produits d'une commande", null);
+  			if (err !== null && err !== undefined)  return callback("pb de récupération des produits d'une commande " + err, null);
   			if (commandes == null || commandes == undefined) return callback("La commande est vide", null);			
   			//logger.warn("remplissage des produits : ", commandes.length);
   			var ttlArticles = 0;

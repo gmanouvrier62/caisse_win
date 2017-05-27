@@ -403,7 +403,9 @@ module.exports = {
 								nom:  resultPr[0].nom,
 								icone:  resultPr[0].icone,
 								conditionnement:  resultPr[0].conditionnement,
-								id_fournisseur:  resultPr[0].id_fournisseur
+								id_fournisseur:  resultPr[0].id_fournisseur,
+								idr: resultPr[0].id_type
+								
 							};
 							logger.util("ligne aant find or create : ", ligne);
 							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
@@ -486,7 +488,8 @@ module.exports = {
 									nom:  resultPr[0].nom,
 									icone:  resultPr[0].icone,
 									conditionnement:  resultPr[0].conditionnement,
-									id_fournisseur:  resultPr[0].id_fournisseur
+									id_fournisseur:  resultPr[0].id_fournisseur,
+									idr: resultPr[0].id_type
 								};
 								
 								sails.models.cmd_pr.findOrCreate(ligneTest,ligneCreate).exec(function creaStat(err,created){
