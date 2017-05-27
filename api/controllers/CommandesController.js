@@ -383,11 +383,11 @@ module.exports = {
 				sails.models.commandes.query("insert into caisse.commandes (id_client,status,dt_livraison, position, createdAt) values(" + id_client + ",1,'" + dt_livraison + "'," + position + ",'" +  createdAt  + "')", function(err, commande) {
 					if (err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion de la commande", 'commande': null});
 					var idCmd = commande.insertId;
-					logger.warn("id com : ", idCmd);
+					//logger.warn("id com : ", idCmd);
 					for(var cpt = 0; cpt < lignes.length; cpt++) {
 						logger.util("l produit : ", lignes[cpt]);
 						sails.models.produits.find({id: lignes[cpt].id_produit}).exec(function(err, resultPr) {
-							logger.util("recup pr : ", resultPr);
+							logger.util("recup pr!!!!!!!!!!!!!!!!!! : ", resultPr);
 							var ligne = {
 								id_commande: idCmd,
 								id_produit: lignes[this.cpt].id_produit,
@@ -405,7 +405,7 @@ module.exports = {
 								conditionnement:  resultPr[0].conditionnement,
 								id_fournisseur:  resultPr[0].id_fournisseur
 							};
-							logger.util("ligne : ", ligne);
+							logger.util("ligne aant find or create : ", ligne);
 							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
 								sails.models.cmd_pr.findOrCreate(ligne,ligne).exec(function creaStat(err,created){
 									if(err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion d'un rpoduit dans une commande " + err, 'commande': null});
@@ -423,7 +423,7 @@ module.exports = {
 											'current_debit': debit
 										};
 										sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-											logger.warn('alors update avoir ', updated);
+											//logger.warn('alors update avoir ', updated);
 											if (err !== null && err !== undefined) {
 												logger.error(err);
 												return res.send({'err': "Erreur de l'update client", 'commande': null});
@@ -479,7 +479,14 @@ module.exports = {
 									tva: resultPr[0].tva,
 									tx_com: resultPr[0].tx_com,
 									ttc_vente: resultPr[0].ttc_vente,
-									ttc_externe: resultPr[0].ttc_externe
+									ttc_externe: resultPr[0].ttc_externe,
+									ref_externe:  resultPr[0].ref_externe,
+									ref_interne:  resultPr[0].ref_interne,
+									promo:  resultPr[0].promo,
+									nom:  resultPr[0].nom,
+									icone:  resultPr[0].icone,
+									conditionnement:  resultPr[0].conditionnement,
+									id_fournisseur:  resultPr[0].id_fournisseur
 								};
 								
 								sails.models.cmd_pr.findOrCreate(ligneTest,ligneCreate).exec(function creaStat(err,created){
