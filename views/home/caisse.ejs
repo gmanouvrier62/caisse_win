@@ -32,6 +32,7 @@
  	//alert($("#mondiv").attr('tom'));
 $(function(){
   $("#dvCheque").hide();
+  $("#dvQte").hide();
   var globalTable;
   var monthNames = [
     "Janvier", "Février", "Mars",
@@ -107,7 +108,7 @@ $(function(){
           produit_ligne += "<td class='pu_pr'>" +  obj.pu  + "</td>";
           produit_ligne += "<td class='prix_ttc'>" +  obj.ttc   + "</td>";
           if(state != "Livrée") {
-            produit_ligne += "<td><button class='btn btn-danger action-suppr'>-</button></td>";
+            produit_ligne += "<td><button class='btn btn-danger action-suppr'>-</button><button class='btn btn-info action-modifie' data-ligne='" + obj.index_ligne + "'><i class='fa fa-edit'></i></button></td>";
           } else {
              produit_ligne += "<td></td>";
           }
@@ -215,7 +216,40 @@ $(function(){
         
       });
     });
+    //modifier une ligne de produits(qté)
+    $('body').on('click', 'button.action-modifie', function (event) {
+      var self = $(this);
+      $("#dvQte").dialog({
+              title: "Modification Quantité, unités ou kilo",
+              resizable: true,
+              height: 160,
+              width: 350,
+              modal: true,
+              buttons: {
+                "Save": function() {
+                   
+                   var numC = parseInt($("#idCommande").html());
+                 
+                   var cligne = self.data('ligne');
+                  
+                   var nqte = $("#nouvelle_qte").val();
+                 //alert("/commandes/modification/" + numC + "/" + cligne);
+                  $.post("/commandes/modification", {'idl': cligne, 'idc': numC, 'nqte' : nqte}, function(leretour) {
+                    //redirection
+                     document.location.href = '/commandes/load/' + numC + '/client/' + currentIdClient;;
 
+                  });
+                  //livraison avec mention cheque
+                  $(this).dialog("close");
+                },
+                "Cancel": function() {
+                 
+                 $(this).dialog("close");
+                }
+              }
+      });
+
+    });
     //suppression d'une ligne produit
     $('body').on('click', 'button.action-suppr', function (event) {
       var numC = parseInt($("#idCommande").html());
@@ -609,7 +643,11 @@ $(function(){
         <div id='calPickerCheque'></div>
     
 </div>
-
+<div id="dvQte" >
+       Nouvelle quantité<input type='text' id='nouvelle_qte' value=''>
+        
+    
+</div>
 
 
 </body>

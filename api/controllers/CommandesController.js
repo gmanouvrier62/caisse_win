@@ -530,6 +530,27 @@ module.exports = {
 			}
 		}
 	},
+	modification: function(req, res) {
+		var index_ligne = req.body.idl;
+		var id_commande = req.body.idc;
+		var nqte = req.body.nqte;
+		logger.warn("modif a faire : commande ", id_commande, " ligne ", index_ligne, " nouvelle qte ", nqte);
+		var origine = {
+			'id_commande': id_commande,
+			'id': index_ligne
+		};
+		var target = {
+			'qte': nqte
+		};
+		sails.models.cmd_pr.update(origine, target).exec(function (err, updated) {
+			if (err !== null && err !== undefined){
+			 logger.error(err);
+			 return res.send({'err': "Erreur de mise à jour ligne commande : " + err, 'modif': 0});
+			} 
+			return res.send({'err': null,'modif': 1});
+		});
+		
+	},
 	retirer_produit: function(req, res) {
 		var index_ligne = req.body.index_ligne;
 		var id_commande = req.body.id_commande;
