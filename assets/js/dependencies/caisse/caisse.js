@@ -29,14 +29,14 @@ $.prototype.setDataTable = function(l_table,id) {
 					if(row[11] != "0") {
 						//prix au kilo
 						html = "<input type='text' id='poids' value='0' class='fontQte'>&nbsp;<b>KG</b>";
-						var blDatas = '" data-id="' + row[0] + '"' + ' data-rayon="' + row[2] + '"' + ' data-ref="' + row[3] + '"';
+						var blDatas = '" data-id="' + row[0] + '"' + ' data-rayon="' + row[2] + '"' + ' data-ref="' + row[3] + '" data-condi="kilo"';
 	                    html += '<button class="btn btn-success btn-xs btn-action action-okpr" style="font-size: 13px;" title="valider" ' + blDatas + '><i class="fa fa-thumbs-o-up"></i></button>';
 
 					} else {
 						html = '<button class="btn btn-primary btn-xs btn-action action-add" style="font-size: 13px;" title="plus" data-id="' + row[0] + '">+</button>';
 	                	html += '<button class="btn btn-primary btn-xs btn-action action-min" style="font-size: 13px;margin-left:5px" title="moins" data-id="' + row[0] + '">-</button>';
 	                    html += '<font id="pr_qte" class="fontQte">1</font>';
-	                    var blDatas = '" data-id="' + row[0] + '"' + ' data-rayon="' + row[2] + '"' + ' data-ref="' + row[3] + '"';
+	                    var blDatas = '" data-id="' + row[0] + '"' + ' data-rayon="' + row[2] + '"' + ' data-ref="' + row[3] + '" data-condi=""';
 	                    html += '<button class="btn btn-success btn-xs btn-action action-okpr" style="font-size: 13px;" title="valider" ' + blDatas + '><i class="fa fa-thumbs-o-up"></i></button>';
 
 					}

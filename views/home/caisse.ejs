@@ -325,12 +325,17 @@ $(function(){
         //On a choisi un produit 
         //alert($("#poids").val());
         var qte;
-        if  ( $("#poids").val() !="0") {
-          //alert("bien sup a 0 : " + parseFloat( $("#poids").val() ));
-          qte = parseFloat( $("#poids").val() );
+        if ($(this).data('condi') == 'kilo') {
+          if  ( $("#poids").val() !="0") {
+            //alert("bien sup a 0 : " + parseFloat( $("#poids").val() ));
+            qte = parseFloat( $("#poids").val() );
+          } else {
+            qte = $(this).parent().parent().find(".fontQte").html();
+          }
         } else {
           qte = $(this).parent().parent().find(".fontQte").html();
         }
+
         //alert(qte);
         var lignes = new Array();
         var ligne = {
