@@ -80,14 +80,14 @@ module.exports = function(sck,callback){
 			} else {
 				sails.models.images_web.create(values, function(err, created) {
 					if (err !== null && err !== undefined) {
-						logger.util("values tried : ", this.valu);
+						logger.util("values tried : ", values);
 						logger.error("erreur ajout image : ", err);
 						process.exit();
 						return callback (err, null);
 					}
 					else
 						return callback(null, created);
-				}.bind({'valu': values}));
+				});
 			}
 		});
 
@@ -141,10 +141,10 @@ module.exports = function(sck,callback){
 							} 
 							//logger.util("created : ", created);
 							saveAnImage(fullImgUrl, created.id, idImage,created.id_type, function(err, saved) {
-								if(err !== null && err !== undefined) return callback ({'err':err, current_url: null});
+								if(err !== null && err !== undefined) return callback ({'errs':err, current_url: null});
 								logger.info("create semble ok");
-								return callback({current_url: this.full_url});
-							}.bind({'full_url': full_url}));
+								return callback({current_url: full_url});
+							});
 							
 						});
 				  	} else {
@@ -168,8 +168,8 @@ module.exports = function(sck,callback){
 
 							saveAnImage(fullImgUrl, updated[0].id, idImage, updated[0].id_type, function(err, saved) {
 								if(err !== null && err !== undefined) return callback({'err':err, current_url: null});
-								return callback({current_url: this.full_url});
-							}.bind({'full_url': full_url}));
+								return callback({current_url: full_url});
+							});
 						});
 				  	}
 				  } else

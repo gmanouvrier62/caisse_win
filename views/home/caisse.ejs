@@ -323,8 +323,15 @@ $(function(){
     });
     $('body').on('click', 'button.action-okpr', function (event) {
         //On a choisi un produit 
-        var qte = $(this).parent().parent().find(".fontQte").html();
-        
+        //alert($("#poids").val());
+        var qte;
+        if  ( $("#poids").val() !="0") {
+          //alert("bien sup a 0 : " + parseFloat( $("#poids").val() ));
+          qte = parseFloat( $("#poids").val() );
+        } else {
+          qte = $(this).parent().parent().find(".fontQte").html();
+        }
+        //alert(qte);
         var lignes = new Array();
         var ligne = {
           'id_produit': $(this).data('id'),

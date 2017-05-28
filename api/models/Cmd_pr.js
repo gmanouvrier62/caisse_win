@@ -18,7 +18,7 @@ module.exports = {
     ref_externe: { type: 'string' },
     
 
-    qte: {type: 'int'},
+    qte: {type: 'decimal'},
     qte_ok: {type: 'int'},
     histo_qte: {type: 'int'},
     

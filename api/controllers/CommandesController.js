@@ -346,7 +346,7 @@ module.exports = {
 		});
 	},
 	addormodify: function (req, res) {
-		logger.info("DANS ADD commandes");
+		logger.info("DANS ADD commandes : ", req.body.qte);
 		var idCmd = req.body.id_commande;
 		var lignes = req.body.lignes;
 		var id_client = req.body.id_client;
