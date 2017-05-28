@@ -30,7 +30,7 @@ CREATE TABLE `cmd_pr` (
   `id` int(11) NOT NULL,
   `id_commande` int(11) NOT NULL,
   `id_produit` int(11) NOT NULL,
-  `qte` int(11) NOT NULL,
+  `qte` float(11) NOT NULL,
   `qte_ok` int(11) NOT NULL COMMENT 'utile pour les achats',
   `histo_qte` int(11) NOT NULL COMMENT 'histo precise : infos fixes post livraison',
   `pht` float NOT NULL,
