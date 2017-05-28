@@ -23,13 +23,28 @@ module.exports = {
 					tb.push(obj.id);
 					tb.push(obj.nom.toString());
 					tb.push(obj.adresse1.toString());
-					tb.push(obj.adresse2.toString());
+					if(obj.adresse2 !==null)
+						tb.push(obj.adresse2.toString());
+					else
+						tb.push("");
 					tb.push(obj.cp.toString());
 					tb.push(obj.ville.toString());
-					tb.push(obj.tel.toString());
-					tb.push(obj.fax.toString());
-					tb.push(obj.mobile.toString());
-					tb.push(obj.email.toString());
+					if(obj.tel !== null)
+						tb.push(obj.tel.toString());
+					else
+						tb.push("");
+					if(obj.fax !== null)
+						tb.push(obj.fax.toString());
+					else
+						tb.push("");
+					if(obj.mobile !== null)
+						tb.push(obj.mobile.toString());
+					else
+						tb.push("");
+					if(obj.email !== null)
+						tb.push(obj.email.toString());
+					else
+						tb.push("");
 					objResult.data.push(tb);
 
 				});
