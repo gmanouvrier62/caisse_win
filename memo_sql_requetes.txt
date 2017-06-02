@@ -3,3 +3,27 @@ update cmd_pr set pht = CAST((ttc_externe/((tva/100)+1))*100 AS INT)/ 100
 
 //query facturations
 select day(createdAt), tva,  (CAST(sum(qte*pht)*100 as INTEGER)/100)/(1-(tx_com/100)) as pht_ttl from cmd_pr where createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' group by day(createdAt), tva 
+
+select day(commandes.createdAt), tva, cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande where commandes.createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' group by day(commandes.createdAt), tva
+
+select day(commandes.createdAt), tva, cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl1,
+cast(sum((pht*qte)) * 100 as integer)/100 as pht_ttl2 from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande where commandes.createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' group by day(commandes.createdAt), tva
+
+
+
+
+
+//requete ok 
+select commandes.createdAt, day(commandes.createdAt), tva, 
+cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl_com, 
+cast(sum((pht*qte)) * 100 as integer)/100 as pht_ttl_sans_com,
+( cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 - cast(sum((pht*qte)) * 100 as integer)/100) as commiss 
+from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande 
+where commandes.createdAt between '2017-04-01 00:00:00' and '2017-05-01 00:00:00' 
+group by day(commandes.createdAt), tva
+
+
+
+
+
+

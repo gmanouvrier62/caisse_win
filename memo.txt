@@ -8,3 +8,18 @@ set cmd_pr.pht = (select produits.pht from
 
 */
 
+
+
+//mise à jour cmd_pr depuis produits
+update caisse.cmd_pr set nom = (select nom from caisse.produits where id=cmd_pr.id_produit), icone = (select icone from caisse.produits where id=cmd_pr.id_produit), 
+ref_interne = (select ref_interne from caisse.produits where id=cmd_pr.id_produit), 
+ref_externe = (select ref_externe from caisse.produits where id=cmd_pr.id_produit), 
+promo = (select promo from caisse.produits where id=cmd_pr.id_produit), 
+idr = (select id_type from caisse.produits where id=cmd_pr.id_produit), 
+id_fournisseur = (select id_fournisseur from caisse.produits where id=cmd_pr.id_produit), 
+conditionnement = (select conditionnement from caisse.produits where id=cmd_pr.id_produit);
+
+
+
+
+update caisse.cmd_pr set reglement = (select paiement from commandes where commandes.id=cmd_pr.id_commande)

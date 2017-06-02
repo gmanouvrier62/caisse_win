@@ -402,7 +402,7 @@ module.exports = {
 								promo:  resultPr[0].promo,
 								nom:  resultPr[0].nom,
 								icone:  resultPr[0].icone,
-								conditionnement:  resultPr[0].conditionnement,
+								tionnement:  resultPr[0].tionnement,
 								id_fournisseur:  resultPr[0].id_fournisseur,
 								idr: resultPr[0].id_type
 								
@@ -487,7 +487,7 @@ module.exports = {
 									promo:  resultPr[0].promo,
 									nom:  resultPr[0].nom,
 									icone:  resultPr[0].icone,
-									conditionnement:  resultPr[0].conditionnement,
+									tionnement:  resultPr[0].tionnement,
 									id_fournisseur:  resultPr[0].id_fournisseur,
 									idr: resultPr[0].id_type
 								};
@@ -660,67 +660,79 @@ module.exports = {
 				};
 				logger.error("source : ", origine);	
 				
-				logger.error("cible : ", target);	
-				sails.models.commandes.update(origine, target).exec(function (err, updated) {
-					if (err !== null && err !== undefined){
-					 	logger.error(err);
-					 	return res.send({'err': "Erreur de mise à jur de commande : " + err, 'commande': null});
-					} else {
-						//c bon je peux destocker chaque produti de la commande
-						sails.models.commandes.getOneFullCommande(req.body.id_commande, req.body.id_client, function(err, fCom) {
-							if (err !== null && err !== undefined) {
-								logger.error(err);
-								return res.send({'err': "Erreur de récupération de la commande p our destockage!!!", 'commande': null});
-							}
-							var ccc = 0;
-							var origine = { 'id': req.body.id_client};
-							var cible = { 
-								'current_avoir': avoir,
-								'current_debit': debit
-							};
-							sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-								logger.warn('alors update avoir ', updated);
+				logger.error("cible : ", target);
+				var lacommande = {
+					'id_commande' : req.body.id_commande
+				};	
+				var lecmd = {
+					'reglement': paiement
+				};
+				sails.models.cmd_pr.update(lacommande,lecmd).exec(function (err, upd) {
+					if (err !== null && err !== undefined) {
+						logger.error(err);
+						return res.send({'err': "Erreur de mise à jour reglement", 'commande': null});
+					}
+					sails.models.commandes.update(origine, target).exec(function (err, updated) {
+						if (err !== null && err !== undefined){
+							logger.error(err);
+							return res.send({'err': "Erreur de mise à jur de commande : " + err, 'commande': null});
+						} else {
+							//c bon je peux destocker chaque produti de la commande
+							sails.models.commandes.getOneFullCommande(req.body.id_commande, req.body.id_client, function(err, fCom) {
 								if (err !== null && err !== undefined) {
 									logger.error(err);
-									return res.send({'err': "Erreur de l'update client", 'commande': null});
+									return res.send({'err': "Erreur de récupération de la commande p our destockage!!!", 'commande': null});
 								}
-								if(fCom.client !== null && fCom.client !== undefined) {
-									fCom.client.current_avoir = avoir;
-									fCom.client.current_debit = debit;
-								}
-								for(var cpt = 0; cpt < fCom.produits.length; cpt++) {
-									
-									var ins = {
-										'id_produit': fCom.produits[cpt].id,
-										'qte': fCom.produits[cpt].qte * -1,
-										'raison': 'livraison',
-										'createdAt': moment().format("YYYY-MM-DD HH:mm:ss")
-									};
-									//
-									var allErr = "";
-									sails.models.achats.addStock(ins, function (err, result) {
-										if (err !== null) {
-											logger.error(err);
-											allErr += err;	
-										}
-										logger.warn('le ccc ', ccc, 'le max ', fCom.produits.length) ;
-										if (ccc == fCom.produits.length-1) {
-											//FIXER LES PRIX au moment de la livraison, les prix ne peuvent plus bouger aprés
-											//fixePrice(fCom, function(err, retourFinal) {
-												if(allErr != "") {
-													logger.error("oulala : ", allErr + err);
-													res.send({"err": allErr, "msg": 'KO'});
-												}
-												else 
-													res.send({"err": null, "msg": 'OK'});		
-											//});
-										}
-										ccc++;
-									});
-								}
+								var ccc = 0;
+								var origine = { 'id': req.body.id_client};
+								var cible = { 
+									'current_avoir': avoir,
+									'current_debit': debit
+								};
+								sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
+									logger.warn('alors update avoir ', updated);
+									if (err !== null && err !== undefined) {
+										logger.error(err);
+										return res.send({'err': "Erreur de l'update client", 'commande': null});
+									}
+									if(fCom.client !== null && fCom.client !== undefined) {
+										fCom.client.current_avoir = avoir;
+										fCom.client.current_debit = debit;
+									}
+									for(var cpt = 0; cpt < fCom.produits.length; cpt++) {
+										
+										var ins = {
+											'id_produit': fCom.produits[cpt].id,
+											'qte': fCom.produits[cpt].qte * -1,
+											'raison': 'livraison',
+											'createdAt': moment().format("YYYY-MM-DD HH:mm:ss")
+										};
+										//
+										var allErr = "";
+										sails.models.achats.addStock(ins, function (err, result) {
+											if (err !== null) {
+												logger.error(err);
+												allErr += err;	
+											}
+											logger.warn('le ccc ', ccc, 'le max ', fCom.produits.length) ;
+											if (ccc == fCom.produits.length-1) {
+												//FIXER LES PRIX au moment de la livraison, les prix ne peuvent plus bouger aprés
+												//fixePrice(fCom, function(err, retourFinal) {
+													if(allErr != "") {
+														logger.error("oulala : ", allErr + err);
+														res.send({"err": allErr, "msg": 'KO'});
+													}
+													else 
+														res.send({"err": null, "msg": 'OK'});		
+												//});
+											}
+											ccc++;
+										});
+									}
+								});
 							});
-						});
-					}
+						}
+					});
 				});
 			} else {
 				return res.send({'err': 'Requête étrange...','commande': ''});

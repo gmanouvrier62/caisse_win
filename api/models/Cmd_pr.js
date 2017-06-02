@@ -32,7 +32,8 @@ module.exports = {
         
     ttc_externe: {type: 'decimal'},
     ttc_vente: {type: 'decimal'},
-    idr: {type: 'int'}
+    idr: {type: 'int'},
+    reglement: {type: 'string'}
 
   },
   ventes_jour: function(d1,d2, callback) {

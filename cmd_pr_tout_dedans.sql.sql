@@ -87,3 +87,22 @@ ALTER TABLE `cmd_pr`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+/*
+
+on a ajouté
+alter table cmd_pr add conditionnement varchar(200);
+alter table cmd_pr add icone varchar(200);
+alter table cmd_pr add idr int;
+alter table cmd_pr add promo int;
+alter table cmd_pr add ref_interne varchar(20);
+alter table cmd_pr add ref_externe varchar(30);
+alter table cmd_pr add id_fournisseur int;
+alter table cmd_pr add nom varchar(155);
+
+
+
+
+
+*/

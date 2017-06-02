@@ -37,8 +37,37 @@ module.exports = {
 
 		var debut = moment(annee + "-" + mois + "01").format("YYYY-MM-DD HH:mm:ss");
 		var fin = moment(annee + "-" + mois + "01").add(1,'M').format("YYYY-MM-DD HH:mm:ss");
-		var sql = "select day(createdAt), tva, (CAST(sum(qte*pht)*100 as INTEGER)/100)/(1-(tx_com/100)) as pht_ttl from cmd_pr where createdAt between '" + debut +"' and '" + fin + "' group by day(createdAt), tva"; 
+		var sql = "select commandes.createdAt, day(commandes.createdAt), tva, ";
+			sql +="cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl_com, ";
+			sql +="cast(sum((pht*qte)) * 100 as integer)/100 as pht_ttl_sans_com, ";
+			sql += " ( cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 - cast(sum((pht*qte)) * 100 as integer)/100) as commiss ";
+			sql += " from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande  ";
+			sql += "where commandes.createdAt between '" + debut + "' and '" + fin + "' group by day(commandes.createdAt), tva"; 
 		logger.warn("sql : ", sql);	
+		/*
+		objet attendu
+		[
+			{1: {
+					'date': '2017-04-01',
+					'HT_5.5': 1,
+					'TVA_5.5': 1,
+					'HT_10': 1,
+					'TVA_10': 1,
+					'HT_20': 1,
+					'TVA_20': 1,
+					'TTC': 1,
+					'CB': 1,
+					'CH': 1,
+					'ES': 1,
+					'CR': 1,
+					'TTC': 1 //on peut s'en passer
+				}}
+
+		]
+
+
+
+		*/
 		sails.models.cmd_pr.query(sql, function(err, results){
 			if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
 			for (var c = 0; c < results.length; c++) {
