@@ -37,7 +37,7 @@ module.exports = {
 
 		var debut = moment(annee + "-" + mois + "01").format("YYYY-MM-DD HH:mm:ss");
 		var fin = moment(annee + "-" + mois + "01").add(1,'M').format("YYYY-MM-DD HH:mm:ss");
-		var sql = "select commandes.createdAt, day(commandes.createdAt), tva, ";
+		var sql = "select commandes.createdAt as ladate, day(commandes.createdAt) as jour, tva as tva, ";
 			sql +="cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl_com, ";
 			sql +="cast(sum((pht*qte)) * 100 as integer)/100 as pht_ttl_sans_com, ";
 			sql += " ( cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 - cast(sum((pht*qte)) * 100 as integer)/100) as commiss ";
@@ -60,21 +60,62 @@ module.exports = {
 					'CH': 1,
 					'ES': 1,
 					'CR': 1,
+					'ND' : 1,
 					'TTC': 1 //on peut s'en passer
 				}}
 
 		]
-
-
-
 		*/
+		var stats = [];
+		var journee = {};
 		sails.models.cmd_pr.query(sql, function(err, results){
 			if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
 			for (var c = 0; c < results.length; c++) {
+				if(stats[results[c].ladate] == null || stats[results[c].ladate] == undefined) {
+					stats[results[c].ladate] = {};	
+					stats[results[c].ladate].HT_5_5 = 0;
+					stats[results[c].ladate].TVA_5_5 = 0;
+					stats[results[c].ladate].HT_10 = 0;
+					stats[results[c].ladate].TVA_10 = 0;
+					stats[results[c].ladate].HT_20 = 0;
+					stats[results[c].ladate].TVA_20 = 0;
+					stats[results[c].ladate].TTC = 0;
+
+				}
+				
+				if(results[c].tva == 5.5) {
+					stats[results[c].ladate].HT_5_5 +=  results[c].ttl_com;
+					stats[results[c].ladate].TVA_5_5 +=  results[c].ttl_com * (results[c].tva/100);
+				}
+
+				if(results[c].tva == 10) {	
+					stats[results[c].ladate].HT_10 +=  results[c].ttl_com;
+					stats[results[c].ladate].TVA_10 += results[c].ttl_com * (results[c].tva/100);
+				}
+				
+				if(results[c].tva == 20) {	
+					stats[results[c].ladate].HT_20 +=  results[c].ttl_com;
+					stats[results[c].ladate].TVA_20 += results[c].ttl_com * (results[c].tva/100);
+				}
+
+				//stats[results[c].ladate].TTC =
+				/*
+				stats[results[c].ladate].CB =
+				stats[results[c].ladate].CH =
+				stats[results[c].ladate].ES =
+				stats[results[c].ladate].CR =
+				stats[results[c].ladate].ND =
+				*/
 				
 
-
 			}
+			//calcul des totaux
+			for (var c = 0; c < results.length; c++) {
+				stats[results[c].ladate].TTC = stats[results[c].ladate].HT_5_5 + stats[results[c].ladate].TVA_5_5 +
+											   stats[results[c].ladate].HT_10 + stats[results[c].ladate].TVA_10 + 
+											   stats[results[c].ladate].HT_20 + stats[results[c].ladate].TVA_20;
+			}
+			logger.warn("retour de statss : " + stats);
 		});
 
 	},
