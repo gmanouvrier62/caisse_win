@@ -33,16 +33,17 @@ module.exports = {
 	facturation: function(req, res) {
 		var annee = req.params.annee;
 		var mois = req.params.mois;
+		logger.warn("annee : " + annee + ", mois : " + mois);
 		mois = mois< 10?'0' + mois:mois;
-
-		var debut = moment(annee + "-" + mois + "01").format("YYYY-MM-DD HH:mm:ss");
-		var fin = moment(annee + "-" + mois + "01").add(1,'M').format("YYYY-MM-DD HH:mm:ss");
+		logger.warn("annee : " + annee + ", mois : " + mois);
+		var debut = moment(annee + "-" + mois + "-01").format("YYYY-MM-DD HH:mm:ss");
+		var fin = moment(annee + "-" + mois + "-01").add(1,'M').format("YYYY-MM-DD HH:mm:ss");
 		var sql = "select commandes.createdAt as ladate, day(commandes.createdAt) as jour, tva as tva, ";
 			sql +="cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 as pht_ttl_com, ";
 			sql +="cast(sum((pht*qte)) * 100 as integer)/100 as pht_ttl_sans_com, ";
 			sql += " ( cast(sum((pht/(1-(tx_com/100))*qte)) * 100 as integer)/100 - cast(sum((pht*qte)) * 100 as integer)/100) as commiss ";
 			sql += " from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande  ";
-			sql += "where commandes.createdAt between '" + debut + "' and '" + fin + "' group by day(commandes.createdAt), tva"; 
+			sql += "where commandes.createdAt >= '" + debut + "' and commandes.createdAt <'" + fin + "' group by day(commandes.createdAt), tva"; 
 		logger.warn("sql : ", sql);	
 		/*
 		objet attendu
@@ -71,6 +72,11 @@ module.exports = {
 		sails.models.cmd_pr.query(sql, function(err, results){
 			if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
 			for (var c = 0; c < results.length; c++) {
+				results[c].ladate = results[c].jour;
+				logger.util("ligne : " + results[c].ladate);
+				logger.warn("putain de tva : " +     results[c].tva);
+				
+				
 				if(stats[results[c].ladate] == null || stats[results[c].ladate] == undefined) {
 					stats[results[c].ladate] = {};	
 					stats[results[c].ladate].HT_5_5 = 0;
@@ -84,20 +90,18 @@ module.exports = {
 				}
 				
 				if(results[c].tva == 5.5) {
-					stats[results[c].ladate].HT_5_5 +=  results[c].ttl_com;
-					stats[results[c].ladate].TVA_5_5 +=  results[c].ttl_com * (results[c].tva/100);
-				}
-
+					//logger.error("va ajouter " +  results[c].ttl_com + "a " + stats[results[c].ladate].HT_5_5);
+					stats[results[c].ladate].HT_5_5 +=  results[c].pht_ttl_com;
+					stats[results[c].ladate].TVA_5_5 +=  results[c].pht_ttl_com * (results[c].tva/100);
+				} 
 				if(results[c].tva == 10) {	
-					stats[results[c].ladate].HT_10 +=  results[c].ttl_com;
-					stats[results[c].ladate].TVA_10 += results[c].ttl_com * (results[c].tva/100);
-				}
-				
+					stats[results[c].ladate].HT_10 +=  results[c].pht_ttl_com;
+					stats[results[c].ladate].TVA_10 += results[c].pht_ttl_com * (results[c].tva/100);
+				} 
 				if(results[c].tva == 20) {	
-					stats[results[c].ladate].HT_20 +=  results[c].ttl_com;
-					stats[results[c].ladate].TVA_20 += results[c].ttl_com * (results[c].tva/100);
-				}
-
+					stats[results[c].ladate].HT_20 +=  results[c].pht_ttl_com;
+					stats[results[c].ladate].TVA_20 += results[c].pht_ttl_com * (results[c].tva/100);
+				} 
 				//stats[results[c].ladate].TTC =
 				/*
 				stats[results[c].ladate].CB =
@@ -116,6 +120,7 @@ module.exports = {
 											   stats[results[c].ladate].HT_20 + stats[results[c].ladate].TVA_20;
 			}
 			logger.warn("retour de statss : " + stats);
+			res.send(stats);
 		});
 
 	},
