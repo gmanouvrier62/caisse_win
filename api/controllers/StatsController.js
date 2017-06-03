@@ -45,82 +45,86 @@ module.exports = {
 			sql += " from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande  ";
 			sql += "where commandes.createdAt >= '" + debut + "' and commandes.createdAt <'" + fin + "' group by day(commandes.createdAt), tva"; 
 		logger.warn("sql : ", sql);	
-		/*
-		objet attendu
-		[
-			{1: {
-					'date': '2017-04-01',
-					'HT_5.5': 1,
-					'TVA_5.5': 1,
-					'HT_10': 1,
-					'TVA_10': 1,
-					'HT_20': 1,
-					'TVA_20': 1,
-					'TTC': 1,
-					'CB': 1,
-					'CH': 1,
-					'ES': 1,
-					'CR': 1,
-					'ND' : 1,
-					'TTC': 1 //on peut s'en passer
-				}}
-
-		]
-		*/
+		
 		var stats = [];
 		var journee = {};
 		sails.models.cmd_pr.query(sql, function(err, results){
 			if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
 			for (var c = 0; c < results.length; c++) {
-				results[c].ladate = results[c].jour;
 				logger.util("ligne : " + results[c].ladate);
-				logger.warn("putain de tva : " +     results[c].tva);
+				logger.util("ligneF : " + moment(results[c].ladate).format("YYYY-MM-DD"));
 				
+				results[c].ladate = moment(results[c].ladate).format("YYYY-MM-DD");
 				
-				if(stats[results[c].ladate] == null || stats[results[c].ladate] == undefined) {
-					stats[results[c].ladate] = {};	
-					stats[results[c].ladate].HT_5_5 = 0;
-					stats[results[c].ladate].TVA_5_5 = 0;
-					stats[results[c].ladate].HT_10 = 0;
-					stats[results[c].ladate].TVA_10 = 0;
-					stats[results[c].ladate].HT_20 = 0;
-					stats[results[c].ladate].TVA_20 = 0;
-					stats[results[c].ladate].TTC = 0;
-
+					
+				if(stats[results[c].jour] == null || stats[results[c].jour] == undefined) {
+					stats[results[c].jour] = {};	
+					stats[results[c].jour].HT_5_5 = 0;
+					stats[results[c].jour].TVA_5_5 = 0;
+					stats[results[c].jour].HT_10 = 0;
+					stats[results[c].jour].TVA_10 = 0;
+					stats[results[c].jour].HT_20 = 0;
+					stats[results[c].jour].TVA_20 = 0;
+					stats[results[c].jour].TTC = 0;
+					stats[results[c].jour].CB = 0;
+					stats[results[c].jour].CH = 0;
+					stats[results[c].jour].ES = 0;
+					stats[results[c].jour].CR = 0;
+					stats[results[c].jour].ND = 0;
+					stats[results[c].jour].TTC_REGLEMENT = 0;
+					
 				}
 				
 				if(results[c].tva == 5.5) {
 					//logger.error("va ajouter " +  results[c].ttl_com + "a " + stats[results[c].ladate].HT_5_5);
-					stats[results[c].ladate].HT_5_5 +=  results[c].pht_ttl_com;
-					stats[results[c].ladate].TVA_5_5 +=  results[c].pht_ttl_com * (results[c].tva/100);
+					stats[results[c].jour].HT_5_5 +=  results[c].pht_ttl_com;
+					stats[results[c].jour].TVA_5_5 +=  results[c].pht_ttl_com * (results[c].tva/100);
 				} 
 				if(results[c].tva == 10) {	
-					stats[results[c].ladate].HT_10 +=  results[c].pht_ttl_com;
-					stats[results[c].ladate].TVA_10 += results[c].pht_ttl_com * (results[c].tva/100);
+					stats[results[c].jour].HT_10 +=  results[c].pht_ttl_com;
+					stats[results[c].jour].TVA_10 += results[c].pht_ttl_com * (results[c].tva/100);
 				} 
 				if(results[c].tva == 20) {	
-					stats[results[c].ladate].HT_20 +=  results[c].pht_ttl_com;
-					stats[results[c].ladate].TVA_20 += results[c].pht_ttl_com * (results[c].tva/100);
+					stats[results[c].jour].HT_20 +=  results[c].pht_ttl_com;
+					stats[results[c].jour].TVA_20 += results[c].pht_ttl_com * (results[c].tva/100);
 				} 
-				//stats[results[c].ladate].TTC =
-				/*
-				stats[results[c].ladate].CB =
-				stats[results[c].ladate].CH =
-				stats[results[c].ladate].ES =
-				stats[results[c].ladate].CR =
-				stats[results[c].ladate].ND =
-				*/
 				
 
 			}
 			//calcul des totaux
 			for (var c = 0; c < results.length; c++) {
-				stats[results[c].ladate].TTC = stats[results[c].ladate].HT_5_5 + stats[results[c].ladate].TVA_5_5 +
-											   stats[results[c].ladate].HT_10 + stats[results[c].ladate].TVA_10 + 
-											   stats[results[c].ladate].HT_20 + stats[results[c].ladate].TVA_20;
+				stats[results[c].jour].TTC = stats[results[c].jour].HT_5_5 + stats[results[c].jour].TVA_5_5 +
+											   stats[results[c].jour].HT_10 + stats[results[c].jour].TVA_10 + 
+											   stats[results[c].jour].HT_20 + stats[results[c].jour].TVA_20;
+				stats[results[c].jour].date = results[c].ladate;							   
 			}
 			logger.warn("retour de statss : " + stats);
-			res.send(stats);
+			sql = "select commandes.createdAt as ladate, day(commandes.createdAt) as jour, reglement, ";
+			sql += "cast(sum( (pht/(1-(tx_com/100)) * (  1+ (tva/100)   ) *qte)) * 100 as integer)/100 as ttc ";
+			sql += "from cmd_pr inner join commandes on commandes.id=cmd_pr.id_commande ";
+			sql += "where commandes.createdAt >= '" + debut + "' and commandes.createdAt < '" + fin + "' "; 
+			sql += "group by day(commandes.createdAt), reglement";
+			sails.models.cmd_pr.query(sql, function(err, results){
+				if (err !== null && err !== undefined) return res.send({"err": err, "msg": null});
+				for (var c = 0; c < results.length; c++) {
+					
+					if(results[c].reglement == 'cb') stats[results[c].jour].CB += results[c].ttc;
+					if(results[c].reglement == 'chèque') stats[results[c].jour].CH += results[c].ttc;
+					if(results[c].reglement == 'espèce') stats[results[c].jour].ES += results[c].ttc;
+					if(results[c].reglement == 'crédit') stats[results[c].jour].CR += results[c].ttc;
+					if(results[c].reglement == '' || results[c].reglement == null || results[c].reglement ==undefined ) stats[results[c].jour].ND += results[c].ttc;
+					
+
+				}
+				//un peu lourd mais efficace en lecture, plusieurs passages...
+				for (var c = 0; c < results.length; c++) {
+					stats[results[c].jour].TTC_REGLEMENT = stats[results[c].jour].CB + stats[results[c].jour].CH +
+												stats[results[c].jour].ES + stats[results[c].jour].CR + 
+												stats[results[c].jour].ND;
+												   
+				}
+				res.send(stats);
+			});
 		});
 
 	},
