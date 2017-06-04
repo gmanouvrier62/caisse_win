@@ -206,18 +206,23 @@ var rows = Object.keys(datas);
 rows.map (function (obj, id) {
     var ligne = datas[obj];
     ws.cell(depart,1).string(ligne.date).style(encadreG);
-    ws.cell(depart,2).string('HT 5,5').style(encadreT);
-    ws.cell(depart,3).string('TVA 5,5').style(encadreT);
-    ws.cell(depart,4).string('HT 10').style(encadreT);
-    ws.cell(depart,5).string('TVA 10').style(encadreT);
-    ws.cell(depart,6).string('HT 20').style(encadreT);
-    ws.cell(depart,7).string('TVA 20').style(encadreT);
-    ws.cell(depart,8).string('TTC').style(encadreT);
-    ws.cell(depart,9).string('Carte bleue').style(encadreT);
-    ws.cell(depart,10).string('Chèque').style(encadreT);
-    ws.cell(depart,11).string('Espèces').style(encadreT);
-    ws.cell(depart,12).string('Crédit').style(encadreT);
-    ws.cell(depart,13).string('TTC').style(encadreT);
+    ws.cell(depart,2).string(ligne.HT_5_5).style(encadreT);
+    ws.cell(depart,3).string(ligne.TVA_5_5).style(encadreT);
+    ws.cell(depart,4).string(ligne.HT_10).style(encadreT);
+    ws.cell(depart,5).string(ligne.TVA_10).style(encadreT);
+    ws.cell(depart,6).string(ligne.HT_20).style(encadreT);
+    ws.cell(depart,7).string(ligne.TVA_20).style(encadreT);
+    ws.cell(depart,8).string(ligne.TTC).style(encadreT);
+    ws.cell(depart,9).string(ligne.CB).style(encadreT);
+    if(ligne.ND !== null && ligne.ND !== undefined)
+        ws.cell(depart,10).string(ligne.ND).style(encadreT);
+    if(ligne.ND !== null && ligne.ND !== undefined && ligne.CH !== null && ligne.CH !== undefined)
+        ws.cell(depart,10).string(ligne.CH).style(encadreT).style(EcritRouge);
+    else
+        ws.cell(depart,10).string(ligne.CH).style(encadreT);
+    ws.cell(depart,11).string(ligne.ES).style(encadreT);
+    ws.cell(depart,12).string(ligne.CR).style(encadreT);
+    ws.cell(depart,13).string(ligne.TTC_REGLEMENT).style(encadreT);
     depart ++;
 });
 
