@@ -2,6 +2,7 @@
 var xl = require('excel4node');
 
 module.exports = function(annee, mois, datas, callback){
+logger.warn("dans excelWriter");
 // Create a new instance of a Workbook class 
 var wb = new xl.Workbook();
  
@@ -25,9 +26,8 @@ var tbMois = [
     'Novembre',
     'Décembre'
 ];
-var mois = "4";
-var annee = "2017";
-var chemin =  'ventilation_caddie_gourmand_'   annee + '_' + mois + '.xlsx';
+
+var chemin =  sails.config.archive_facture + 'ventilation_caddie_gourmand_'  + annee + '_' + mois + '.xlsx';
 var styleTitre = wb.createStyle({
     
    fill: { // §18.8.20 fill (Fill)
@@ -211,7 +211,7 @@ var encadreHB = wb.createStyle({
  ws.cell(4,12).string('Crédit').style(EcritRouge).style(encadreT);
  ws.cell(4,13).string('TTC').style(EcritRouge).style(encadreT);
 
- 
+logger.warn("avant écriture des données"); 
 //remplissage des données
 var depart = 5;
 var rows = Object.keys(datas);
@@ -250,5 +250,7 @@ ws.cell(depart,10).formula('=SOMME(J5:J' + depart-1 + ')').style(encadreT);
 ws.cell(depart,11).formula('=SOMME(K5:K' + depart-1 + ')').style(encadreT);
 ws.cell(depart,12).formula('=SOMME(L5:L' + depart-1 + ')').style(encadreT);
 ws.cell(depart,13).formula('=SOMME(M5:M' + depart-1 + ')').style(encadreT);
+logger.warn('avant ecriture du fichier');
+wb.write(chemin);
 callback(chemin);
 };

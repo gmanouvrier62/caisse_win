@@ -123,8 +123,12 @@ module.exports = {
 												stats[results[c].jour].ND;
 												   
 				}
+				logger.warn("avant excelWriter");
+				excelWriter(annee, mois, stats, function(chemin) {
+					logger.warn("dans closure : ", chemin);
+					res.send(stats);
+				});
 				
-				res.send(stats);
 			});
 		});
 
