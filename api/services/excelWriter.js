@@ -28,6 +28,7 @@ var tbMois = [
 ];
 
 var chemin =  sails.config.archive_facture + 'ventilation_caddie_gourmand_'  + annee + '_' + mois + '.xlsx';
+
 var styleTitre = wb.createStyle({
     
    fill: { // §18.8.20 fill (Fill)
@@ -170,7 +171,7 @@ var encadreHB = wb.createStyle({
  ws.cell(1,1).string('').style(styleTitre).style(encadreG);
  ws.cell(1,2).string('').style(styleTitre).style(encadreHB);
  ws.cell(1,3).string('').style(styleTitre).style(encadreHB);
- ws.cell(1,4).string('BROUILLARD DE CAISSE DE LA SARL "Le caddie goumand"-mois de : ' + tbMois[mois] + '    ' + annee).style(styleTitre).style(encadreHB);
+ ws.cell(1,4).string('BROUILLARD DE CAISSE DE LA SARL "Le caddie goumand"-mois de : ' + tbMois[parseInt(mois)] + '    ' + annee).style(styleTitre).style(encadreHB);
  ws.cell(1,5).string('').style(styleTitre).style(encadreHB);
  ws.cell(1,6).string('').style(styleTitre).style(encadreHB);
  ws.cell(1,7).string('').style(styleTitre).style(encadreHB);
@@ -241,19 +242,25 @@ rows.map (function (obj, id) {
     depart ++;
 });
 ws.cell(depart,1).string('TOTAUX').style(encadreT);
-ws.cell(depart,2).formula('=SOMME(B5:B' + depart-1 + ')').style(encadreT);
-ws.cell(depart,3).formula('=SOMME(C5:C' + depart-1 + ')').style(encadreT);
-ws.cell(depart,4).formula('=SOMME(D5:D' + depart-1 + ')').style(encadreT);
-ws.cell(depart,5).formula('=SOMME(E5:E' + depart-1 + ')').style(encadreT);
-ws.cell(depart,6).formula('=SOMME(F5:F' + depart-1 + ')').style(encadreT);
-ws.cell(depart,7).formula('=SOMME(G5:G' + depart-1 + ')').style(encadreT);
-ws.cell(depart,8).formula('=SOMME(H5:H' + depart-1 + ')').style(encadreT);
-ws.cell(depart,9).formula('=SOMME(I5:I' + depart-1 + ')').style(encadreT);
-ws.cell(depart,10).formula('=SOMME(J5:J' + depart-1 + ')').style(encadreT);
-ws.cell(depart,11).formula('=SOMME(K5:K' + depart-1 + ')').style(encadreT);
-ws.cell(depart,12).formula('=SOMME(L5:L' + depart-1 + ')').style(encadreT);
-ws.cell(depart,13).formula('=SOMME(M5:M' + depart-1 + ')').style(encadreT);
+logger.warn('=SUM(B5:B' + (depart-1) + ')');
+ws.cell(depart,2).formula('=SUM(B5:B' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,3).formula('=SUM(C5:C' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,4).formula('=SUM(D5:D' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,5).formula('=SUM(E5:E' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,6).formula('=SUM(F5:F' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,7).formula('=SUM(G5:G' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,8).formula('=SUM(H5:H' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,9).formula('=SUM(I5:I' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,10).formula('=SUM(J5:J' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,11).formula('=SUM(K5:K' +(depart-1) + ')').style(encadreT);
+ws.cell(depart,12).formula('=SUM(L5:L' + (depart-1) + ')').style(encadreT);
+ws.cell(depart,13).formula('=SUM(M5:M' + (depart-1) + ')').style(encadreT);
 logger.warn('avant ecriture du fichier');
-wb.write(chemin);
-callback(chemin);
+try {
+    wb.write(chemin);
+    return callback(null, chemin);
+} catch(e) {
+    return callback(e, chemin);
+}
+
 };

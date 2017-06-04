@@ -28,7 +28,7 @@ module.exports = {
 		logger.warn("OK dans le controller stocks");
 		var menu = fs.readFileSync(sails.config.appPath + '/views/menu.ejs').toString();
 
-		return res.render ('chiffres/ventes',{'action': 'stats', 'periode': periode, 'd1': debut, 'd2': fin, 'menu': menu});
+		return res.render ('chiffres/facto',{'menu': menu});
 	},
 	facturation: function(req, res) {
 		var annee = req.params.annee;
@@ -124,9 +124,9 @@ module.exports = {
 												   
 				}
 				logger.warn("avant excelWriter");
-				excelWriter(annee, mois, stats, function(chemin) {
+				excelWriter(annee, mois, stats, function(err, chemin) {
 					logger.warn("dans closure : ", chemin);
-					res.send(stats);
+					res.send({'err':err,'datas': stats, 'chemin': chemin});
 				});
 				
 			});

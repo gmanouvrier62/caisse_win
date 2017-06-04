@@ -1,0 +1,90 @@
+<html>
+<head>
+<link rel="stylesheet" href="/styles/font-awesome-4.7.0/css/font-awesome.min.css">
+<link href="/js/dependencies/pnotify.custom.min.css" rel="stylesheet">
+<link href="/js/dependencies/caisse.css" rel="stylesheet">
+<link rel="stylesheet" href="/styles/style.css" type="text/css" media="screen" />
+<link href="/js/dependencies/jquery-ui/jquery-ui.css" rel="stylesheet">
+<link href="/js/dependencies/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/js/dependencies/DataTables-1.10.12/media/css/jquery.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/js/dependencies/tooltipster/dist/css/tooltipster.bundle.min.css" />
+<link href="/js/dependencies/sc026/css/style.css" rel="stylesheet">
+   
+ <script type="text/javascript" src="/js/dependencies/jquery.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery-ui.js"></script>
+ <script type="text/javascript" src="/js/dependencies/pnotify.js"></script>
+ <script type="text/javascript" src="/js/dependencies/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="/js/dependencies/jquery.spasticNav.js"></script>
+ <script type="text/javascript" src="/js/dependencies/DataTables-1.10.12/media/js/jquery.dataTables.js"></script>		
+ <script type="text/javascript" src="/js/dependencies/composant/ModalFormBind.js"></script>
+ <script type="text/javascript" src="/js/dependencies/tooltipster/dist/js/tooltipster.bundle.min.js"></script> 
+ <script type="text/javascript" src="/js/dependencies/sc026/scr/modernizr.js"></script>
+ 
+<script>
+var memoPrint = "";
+$(function(){
+	$(".simple_middle").hide();
+	var monthNames = [
+	  "Janvier", "Février", "Mars",
+	  "Avril", "Mai", "Juin", "Juillet",
+	  "Août", "Septembre", "Octobre",
+	  "Novembre", "Decembre"
+	];
+    	
+	
+	PNotify.prototype.options.styling = "jqueryui";
+    
+    function impression(content){
+        
+
+        var fen = window.open("", "", "height=500, width=600,toolbar=0, menubar=0, scrollbars=1, resizable=1,status=0, location=0, left=10, top=10");
+        
+        // style du popup
+        fen.document.body.style.color = '#000000';
+        fen.document.body.style.backgroundColor = '#FFFFFF';
+        fen.document.body.style.padding = "20px";
+        
+        // Ajout des données a imprimer
+        fen.document.title = "ACHATS";
+        fen.document.body.innerHTML += " " + content + " ";
+        
+        // Impression du popup
+        fen.window.print();
+        
+        //Fermeture du popup
+        fen.window.close();
+        return true;
+    
+
+    }
+    $('body').on('click', 'button.action-print', function(){
+
+        impression("<table>" + $("#tblImp").html() + "</table>");
+    });
+	$('body').on('click', 'button.action-cal', function(){
+		
+	});
+
+    
+});
+
+</script>
+</head>
+<body>
+<div id="dvHeader" class="row">
+<%- menu %>
+</div>
+<div style="text-align:center"><H1>
+    <font >
+
+
+
+    </font></H1>
+    <font id='fdt'></font>
+
+    <button id="calen" class="btn btn-success btn-xs btn-action action-cal" style="font-size: 13px;margin-bottom:5px" title="Choisir le jour" ><i class="fa fa-calendar"></i></button><div  class="simple_middle"><div id="dt1" style="width:290px;float:left"></div><div style="float:left"><font id="simpleText">AU</font></div><div id="dt2" style="margin-left:20px;width:290px;float:left"></div></div><br>
+
+    <button id="print" class="btn btn-success btn-xs btn-action action-print" style="font-size: 13px;" title="Imprimer" ><i class="fa fa-print"></i>Imprimer</button></div>
+
+
+</div>
