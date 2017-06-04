@@ -123,6 +123,7 @@ module.exports = {
 												stats[results[c].jour].ND;
 												   
 				}
+				
 				res.send(stats);
 			});
 		});

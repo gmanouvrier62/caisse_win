@@ -9,6 +9,7 @@
     "cheerio": "0.22.0",
     "db-migrate": "0.9.26",
     "ejs": "~0.8.4",
+    "excel4node": "^1.2.1",
     "express": "^4.15.2",
     "fileupload": "1.0.0",
     "forever": "0.15.2",
