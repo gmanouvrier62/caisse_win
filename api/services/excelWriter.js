@@ -110,6 +110,18 @@ var encadreT = wb.createStyle({
         }
     }
 });
+var encadreGD = wb.createStyle({
+    border: {
+        left: {
+            style: 'thin', //§18.18.3 ST_BorderStyle (Border Line Styles) ['none', 'thin', 'medium', 'dashed', 'dotted', 'thick', 'double', 'hair', 'mediumDashed', 'dashDot', 'mediumDashDot', 'dashDotDot', 'mediumDashDotDot', 'slantDashDot']
+            color: '#000000' // HTML style hex value
+        },
+        right: {
+           style: 'thin', //§18.18.3 ST_BorderStyle (Border Line Styles) ['none', 'thin', 'medium', 'dashed', 'dotted', 'thick', 'double', 'hair', 'mediumDashed', 'dashDot', 'mediumDashDot', 'dashDotDot', 'mediumDashDotDot', 'slantDashDot']
+            color: '#000000' // HTML style hex value
+        }
+    }
+});
 var encadreG = wb.createStyle({
     border: {
         left: {
@@ -205,26 +217,38 @@ var depart = 5;
 var rows = Object.keys(datas);
 rows.map (function (obj, id) {
     var ligne = datas[obj];
-    ws.cell(depart,1).string(ligne.date).style(encadreG);
-    ws.cell(depart,2).string(ligne.HT_5_5).style(encadreT);
-    ws.cell(depart,3).string(ligne.TVA_5_5).style(encadreT);
-    ws.cell(depart,4).string(ligne.HT_10).style(encadreT);
-    ws.cell(depart,5).string(ligne.TVA_10).style(encadreT);
-    ws.cell(depart,6).string(ligne.HT_20).style(encadreT);
-    ws.cell(depart,7).string(ligne.TVA_20).style(encadreT);
-    ws.cell(depart,8).string(ligne.TTC).style(encadreT);
-    ws.cell(depart,9).string(ligne.CB).style(encadreT);
+    ws.cell(depart,1).string(ligne.date).style(encadreGD);
+    ws.cell(depart,2).string(ligne.HT_5_5).style(encadreGD);
+    ws.cell(depart,3).string(ligne.TVA_5_5).style(encadreGD);
+    ws.cell(depart,4).string(ligne.HT_10).style(encadreGD);
+    ws.cell(depart,5).string(ligne.TVA_10).style(encadreGD);
+    ws.cell(depart,6).string(ligne.HT_20).style(encadreGD);
+    ws.cell(depart,7).string(ligne.TVA_20).style(encadreGD);
+    ws.cell(depart,8).string(ligne.TTC).style(encadreGD);
+    ws.cell(depart,9).string(ligne.CB).style(encadreGD);
     if(ligne.ND !== null && ligne.ND !== undefined)
-        ws.cell(depart,10).string(ligne.ND).style(encadreT);
+        ws.cell(depart,10).string(ligne.ND).style(encadreGD);
     if(ligne.ND !== null && ligne.ND !== undefined && ligne.CH !== null && ligne.CH !== undefined)
-        ws.cell(depart,10).string(ligne.CH).style(encadreT).style(EcritRouge);
+        ws.cell(depart,10).string(ligne.CH).style(encadreGD).style(EcritRouge);
     else
-        ws.cell(depart,10).string(ligne.CH).style(encadreT);
-    ws.cell(depart,11).string(ligne.ES).style(encadreT);
-    ws.cell(depart,12).string(ligne.CR).style(encadreT);
-    ws.cell(depart,13).string(ligne.TTC_REGLEMENT).style(encadreT);
+        ws.cell(depart,10).string(ligne.CH).style(encadreGD);
+    ws.cell(depart,11).string(ligne.ES).style(encadreGD);
+    ws.cell(depart,12).string(ligne.CR).style(encadreGD);
+    ws.cell(depart,13).string(ligne.TTC_REGLEMENT).style(encadreGD);
     depart ++;
 });
-
+ws.cell(depart,1).string('TOTAUX').style(encadreT);
+ws.cell(depart,2).formula('=SOMME(B5:B' + depart-1 + ')').style(encadreT);
+ws.cell(depart,3).formula('=SOMME(C5:C' + depart-1 + ')').style(encadreT);
+ws.cell(depart,4).formula('=SOMME(D5:D' + depart-1 + ')').style(encadreT);
+ws.cell(depart,5).formula('=SOMME(E5:E' + depart-1 + ')').style(encadreT);
+ws.cell(depart,6).formula('=SOMME(F5:F' + depart-1 + ')').style(encadreT);
+ws.cell(depart,7).formula('=SOMME(G5:G' + depart-1 + ')').style(encadreT);
+ws.cell(depart,8).formula('=SOMME(H5:H' + depart-1 + ')').style(encadreT);
+ws.cell(depart,9).formula('=SOMME(I5:I' + depart-1 + ')').style(encadreT);
+ws.cell(depart,10).formula('=SOMME(J5:J' + depart-1 + ')').style(encadreT);
+ws.cell(depart,11).formula('=SOMME(K5:K' + depart-1 + ')').style(encadreT);
+ws.cell(depart,12).formula('=SOMME(L5:L' + depart-1 + ')').style(encadreT);
+ws.cell(depart,13).formula('=SOMME(M5:M' + depart-1 + ')').style(encadreT);
 callback(chemin);
 };
