@@ -1,6 +1,6 @@
 // Require library 
 var xl = require('excel4node');
-
+var logger = require('../services/logger.init.js').logger("tom.txt");
 module.exports = function(annee, mois, datas, callback){
 logger.warn("dans excelWriter");
 // Create a new instance of a Workbook class 
@@ -217,24 +217,27 @@ var depart = 5;
 var rows = Object.keys(datas);
 rows.map (function (obj, id) {
     var ligne = datas[obj];
+    logger.util("ligne : ", ligne);
     ws.cell(depart,1).string(ligne.date).style(encadreGD);
-    ws.cell(depart,2).string(ligne.HT_5_5).style(encadreGD);
-    ws.cell(depart,3).string(ligne.TVA_5_5).style(encadreGD);
-    ws.cell(depart,4).string(ligne.HT_10).style(encadreGD);
-    ws.cell(depart,5).string(ligne.TVA_10).style(encadreGD);
-    ws.cell(depart,6).string(ligne.HT_20).style(encadreGD);
-    ws.cell(depart,7).string(ligne.TVA_20).style(encadreGD);
-    ws.cell(depart,8).string(ligne.TTC).style(encadreGD);
-    ws.cell(depart,9).string(ligne.CB).style(encadreGD);
+    ws.cell(depart,2).number(ligne.HT_5_5).style(encadreGD);
+    ws.cell(depart,3).number(ligne.TVA_5_5).style(encadreGD);
+    ws.cell(depart,4).number(ligne.HT_10).style(encadreGD);
+    ws.cell(depart,5).number(ligne.TVA_10).style(encadreGD);
+    ws.cell(depart,6).number(ligne.HT_20).style(encadreGD);
+    ws.cell(depart,7).number(ligne.TVA_20).style(encadreGD);
+    ws.cell(depart,8).number(ligne.TTC).style(encadreGD);
+    ws.cell(depart,9).number(ligne.CB).style(encadreGD);
     if(ligne.ND !== null && ligne.ND !== undefined)
-        ws.cell(depart,10).string(ligne.ND).style(encadreGD);
-    if(ligne.ND !== null && ligne.ND !== undefined && ligne.CH !== null && ligne.CH !== undefined)
-        ws.cell(depart,10).string(ligne.CH).style(encadreGD).style(EcritRouge);
-    else
-        ws.cell(depart,10).string(ligne.CH).style(encadreGD);
-    ws.cell(depart,11).string(ligne.ES).style(encadreGD);
-    ws.cell(depart,12).string(ligne.CR).style(encadreGD);
-    ws.cell(depart,13).string(ligne.TTC_REGLEMENT).style(encadreGD);
+        ws.cell(depart,10).number(ligne.ND).style(encadreGD);
+    if(ligne.ND !== null && ligne.ND !== undefined && ligne.CH !== null && ligne.CH !== undefined) {
+        ws.cell(depart,10).number(ligne.ND).style(encadreGD).style(EcritRouge);
+        ws.cell(depart,14).number(ligne.CH).style(encadreGD);
+    } else
+        ws.cell(depart,10).number(ligne.CH).style(encadreGD);
+    
+    ws.cell(depart,11).number(ligne.ES).style(encadreGD);
+    ws.cell(depart,12).number(ligne.CR).style(encadreGD);
+    ws.cell(depart,13).number(ligne.TTC_REGLEMENT).style(encadreGD);
     depart ++;
 });
 ws.cell(depart,1).string('TOTAUX').style(encadreT);
