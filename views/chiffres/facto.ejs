@@ -62,11 +62,27 @@ $(function(){
         impression("<table>" + $("#tblImp").html() + "</table>");
     });
 	$('body').on('click', 'button.action-cal', function(){
-		
+		$.get('/chiffres/facturation/' + $("#lannee").val() + '/' + $("#lemois").val(), {}, function(datas) {
+            if(datas.err != "" && datas.err !== null) {
+			 var infos = new PNotify({
+                title: 'Erreur ',
+                text: datas.err,
+                type: 'error',
+                desktop: {
+                  desktop: true
+                }
+              }); 
+    		} else {
+                $("#bac").append("<a href='file:///c:\\var\\archives\\" + datas.chemin + "' type='application/vnd.ms-excel'>c:\\var\\archives\\" +  datas.chemin + "</a><br>");
+                
+            }
+
+        });
 	});
 
     
 });
+//
 
 </script>
 </head>
@@ -81,10 +97,53 @@ $(function(){
 
     </font></H1>
     <font id='fdt'></font>
+    <select id="lemois">
+        <option value="1">Janvier</option>
+        <option value="2">Février</option>
+        <option value="3">Mars</option>
+        <option value="4">Avril</option>
+        <option value="5">Mai</option>
+        <option value="6">Juin</option>
+        <option value="7">Juillet</option>
+        <option value="8">Août</option>
+        <option value="9">Septembre</option>
+        <option value="10">Octobre</option>
+        <option value="11">Novembre</option>
+        <option value="12">Décembre</option>
+    </select>
+    <select id="lannee">
+        <option value="2017">2017</option>
+        <option value="2018">2017</option>
+        <option value="2019">2017</option>
+        <option value="2020">2017</option>
+        <option value="2021">2017</option>
+        
 
-    <button id="calen" class="btn btn-success btn-xs btn-action action-cal" style="font-size: 13px;margin-bottom:5px" title="Choisir le jour" ><i class="fa fa-calendar"></i></button><div  class="simple_middle"><div id="dt1" style="width:290px;float:left"></div><div style="float:left"><font id="simpleText">AU</font></div><div id="dt2" style="margin-left:20px;width:290px;float:left"></div></div><br>
+    </select>
+
+
+
+
+    <button id="calen" class="btn btn-success btn-xs btn-action action-cal" style="font-size: 13px;margin-bottom:5px" title="Choisir le mois" ><i class="fa fa-file-excel-o"></i></button><br>
 
     <button id="print" class="btn btn-success btn-xs btn-action action-print" style="font-size: 13px;" title="Imprimer" ><i class="fa fa-print"></i>Imprimer</button></div>
-
+    <div id="bac"></div>
 
 </div>
+<div id="rowVentes" class="col-md-12" style="margin-left:10px;margin-top:20px;">
+<table style="border:solid 1px black;width:80%">
+    <tr>
+        <td style="background-color :#f4b0b0;border:solid 1px black"></td>
+        <td colspan='7'  style="background-color :khaki;border:solid 1px black">Ventilation chiffre d'affaire par TVA </td>
+        <td colspan='5'  style="background-color : aqua;border:solid 1px black">Ventilation chiffre d'affaire par mode de paiement </td>
+        
+    </tr>
+    <tr style="color:darkred; font-weight:bold;border:solid 1px black">
+        <td style="border:solid 1px black">Date</td><td style="border:solid 1px black">HT 5.5</td><td style="border:solid 1px black">TVA 5.5</td>
+        <td style="border:solid 1px black">HT 10</td><td style="border:solid 1px black">TVA 10</td ><td style="border:solid 1px black">HT 20</td>
+        <td style="border:solid 1px black">TVA 20</td><td style="border:solid 1px black">TTC</td><td style="border:solid 1px black">CB</td>
+        <td style="border:solid 1px black">Chèque</td><td style="border:solid 1px black">Espèces</td><td style="border:solid 1px black">Crédit</td><td style="border:solid 1px black">TTC</td>
+    </tr>
+</table>
+</div>
+

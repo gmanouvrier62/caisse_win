@@ -126,7 +126,7 @@ module.exports = {
 				logger.warn("avant excelWriter");
 				excelWriter(annee, mois, stats, function(err, chemin) {
 					logger.warn("dans closure : ", chemin);
-					res.send({'err':err,'datas': stats, 'chemin': chemin});
+					res.send({'err': err,'datas': stats, 'chemin': chemin});
 				});
 				
 			});
