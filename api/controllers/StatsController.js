@@ -8,7 +8,7 @@ var fs = require('fs');
 var logger = require('../services/logger.init.js').logger("tom.txt");
 var achats = require('../services/achatsTool.js');
 var moment = require("moment");
-
+var numeral = require("numeral");
 module.exports = {
 	home: function (req, res) {
 		var debut = moment().format("YYYY-MM-DD");
@@ -93,9 +93,18 @@ module.exports = {
 			}
 			//calcul des totaux
 			for (var c = 0; c < results.length; c++) {
+				stats[results[c].jour].HT_5_5 = parseFloat(numeral(stats[results[c].jour].HT_5_5).format('0.00'));
+				 stats[results[c].jour].TVA_5_5 =  parseFloat(numeral(stats[results[c].jour].TVA_5_5).format('0.00'));
+				 stats[results[c].jour].HT_10 =  parseFloat(numeral(stats[results[c].jour].HT_10).format('0.00'));
+				 stats[results[c].jour].TVA_10 = parseFloat( numeral(stats[results[c].jour].TVA_10).format('0.00'));
+				 stats[results[c].jour].HT_20 =  parseFloat(numeral(stats[results[c].jour].HT_20).format('0.00'));
+				 stats[results[c].jour].TVA_20 = parseFloat( numeral(stats[results[c].jour].TVA_20).format('0.00'));
+
+			
 				stats[results[c].jour].TTC = stats[results[c].jour].HT_5_5 + stats[results[c].jour].TVA_5_5 +
 											   stats[results[c].jour].HT_10 + stats[results[c].jour].TVA_10 + 
 											   stats[results[c].jour].HT_20 + stats[results[c].jour].TVA_20;
+				stats[results[c].jour].TTC = parseFloat(numeral(stats[results[c].jour].TTC).format('0.00'));
 				stats[results[c].jour].date = results[c].ladate;							   
 			}
 			logger.warn("retour de statss : " + stats);
@@ -118,14 +127,21 @@ module.exports = {
 				}
 				//un peu lourd mais efficace en lecture, plusieurs passages...
 				for (var c = 0; c < results.length; c++) {
+					stats[results[c].jour].CB = parseFloat(numeral(stats[results[c].jour].CB).format('0.00'));
+					stats[results[c].jour].CH = parseFloat(numeral(stats[results[c].jour].CH).format('0.00'));
+					stats[results[c].jour].ES = parseFloat(numeral(stats[results[c].jour].ES).format('0.00'));
+					stats[results[c].jour].CR = parseFloat(numeral(stats[results[c].jour].CR).format('0.00'));
+					stats[results[c].jour].ND = parseFloat(numeral(stats[results[c].jour].ND).format('0.00'));
+					
 					stats[results[c].jour].TTC_REGLEMENT = stats[results[c].jour].CB + stats[results[c].jour].CH +
 												stats[results[c].jour].ES + stats[results[c].jour].CR + 
 												stats[results[c].jour].ND;
-												   
+					stats[results[c].jour].TTC_REGLEMENT = parseFloat(numeral(stats[results[c].jour].TTC_REGLEMENT).format('0.00'));							   
 				}
 				logger.warn("avant excelWriter");
 				excelWriter(annee, mois, stats, function(err, chemin) {
 					logger.warn("dans closure : ", chemin);
+					logger.error(err);
 					res.send({'err': err,'datas': stats, 'chemin': chemin});
 				});
 				

@@ -69,6 +69,16 @@ ul, li {margin: 0; padding: 0;}
 .tbl_content {
 	font-size: 11px;
 }
+#tblVentes td{
+	background-color: #DDDDDD;
+	border: solid 1px black;
+	margin-left:6px;
+	margin-right: 6px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
 .ligne1 {
 	background-color: #EFE6E6;
 }
