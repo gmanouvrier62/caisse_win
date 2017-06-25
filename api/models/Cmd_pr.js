@@ -19,7 +19,7 @@ module.exports = {
     
 
     qte: {type: 'decimal'},
-    qte_ok: {type: 'int'},
+    qte_ok: {type: 'decimal'},
     histo_qte: {type: 'int'},
     
     tva: {type: 'decimal'},

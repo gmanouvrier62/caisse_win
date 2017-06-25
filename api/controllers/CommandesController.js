@@ -391,7 +391,7 @@ module.exports = {
 							var ligne = {
 								id_commande: idCmd,
 								id_produit: lignes[this.cpt].id_produit,
-								qte: lignes[this.cpt].qte,
+								qte: parseFloat(lignes[this.cpt].qte),
 								pht: resultPr[0].pht,
 								tva: resultPr[0].tva,
 								tx_com: resultPr[0].tx_com,

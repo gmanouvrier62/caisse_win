@@ -233,6 +233,7 @@ $(function(){
                    var cligne = self.data('ligne');
                   
                    var nqte = $("#nouvelle_qte").val();
+                   alert('ok qte = ' + nqte);
                  //alert("/commandes/modification/" + numC + "/" + cligne);
                   $.post("/commandes/modification", {'idl': cligne, 'idc': numC, 'nqte' : nqte}, function(leretour) {
                     //redirection
@@ -360,13 +361,15 @@ $(function(){
         //alert($("#poids").val());
         var qte;
         if ($(this).data('condi') == 'kilo') {
-          if  ( $("#poids").val() !="0") {
+          //if  ( $("#poids").val() !="0") {
             //alert("bien sup a 0 : " + parseFloat( $("#poids").val() ));
             qte = parseFloat( $("#poids").val() );
-          } else {
-            qte = $(this).parent().parent().find(".fontQte").html();
-          }
+            
+          //} else {
+            //qte = $(this).parent().parent().find(".fontQte").html();
+          //}
         } else {
+          //alert('chelou');
           qte = $(this).parent().parent().find(".fontQte").html();
         }
 
