@@ -24,7 +24,7 @@ module.exports = {
 			} else {
 				logger.warn('pas de clt');
 			}
-
+			logger.warn("ok sans date");
 			return res.render ('commandes/commandes_liste',{'action': 'COMMANDES', 'status': [1,2,3,4,5,6],'id_client': id_client, 'menu': menu});	
 		}
 	},
@@ -244,6 +244,7 @@ module.exports = {
 		});
 	},
 	getAll: function (req, res) {
+		logger.warn("fuking getall");
 		sails.models.commandes.getAll(function(err,results) {
 			var objResult = {"data": []};
 			if(results !== null) {
@@ -286,6 +287,7 @@ module.exports = {
 		});
 	},
 	getCommandes: function(req, res) {
+		logger.warn("ds controller comm getCommandes");
 		sails.models.commandes.getCommandes(req, function(err, retour) {
 			if (err !== null && err !== undefined) {
 				return res.send({'err': err,'commandes': null});
@@ -293,7 +295,7 @@ module.exports = {
 			var objResult = {"data": []};
 			objResult.data = retour;
 			//return res.send({'err': null,'commandes': retour});
-			logger.util("avant retour ", objResult);
+			//logger.util("avant retour ", objResult);
 			return res.send(objResult);
 		});
 	},
@@ -346,7 +348,7 @@ module.exports = {
 		});
 	},
 	addormodify: function (req, res) {
-		logger.info("DANS ADD commandes : ", req.body.qte);
+		//logger.info("DANS ADD commandes : ", req.body.qte);
 		var idCmd = req.body.id_commande;
 		var lignes = req.body.lignes;
 		var id_client = req.body.id_client;
@@ -385,9 +387,9 @@ module.exports = {
 					var idCmd = commande.insertId;
 					//logger.warn("id com : ", idCmd);
 					for(var cpt = 0; cpt < lignes.length; cpt++) {
-						logger.util("l produit : ", lignes[cpt]);
+						//logger.util("l produit : ", lignes[cpt]);
 						sails.models.produits.find({id: lignes[cpt].id_produit}).exec(function(err, resultPr) {
-							logger.util("recup pr!!!!!!!!!!!!!!!!!! : ", resultPr);
+							//logger.util("recup pr!!!!!!!!!!!!!!!!!! : ", resultPr);
 							var ligne = {
 								id_commande: idCmd,
 								id_produit: lignes[this.cpt].id_produit,
@@ -407,7 +409,7 @@ module.exports = {
 								idr: resultPr[0].id_type
 								
 							};
-							logger.util("ligne aant find or create : ", ligne);
+							//logger.util("ligne aant find or create : ", ligne);
 							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
 								sails.models.cmd_pr.findOrCreate(ligne,ligne).exec(function creaStat(err,created){
 									if(err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion d'un rpoduit dans une commande " + err, 'commande': null});
@@ -445,7 +447,7 @@ module.exports = {
 			});
 		} else {
 			//C'est une modif de commande existante
-			logger.warn("cmd? modify : ", idCmd);
+			//logger.warn("cmd? modify : ", idCmd);
 			if(parseInt(idCmd)>0) {
 				var oldC= {
 					'id': parseInt(idCmd)
@@ -501,7 +503,7 @@ module.exports = {
 											logger.error(err);
 											return res.send({'err': "Erreur de récupération de la commande", 'commande': null});
 										}
-										logger.util(fCom);
+										//logger.util(fCom);
 										var origine = { 'id': id_client};
 										var cible = { 
 											'current_avoir': avoir,
@@ -509,7 +511,7 @@ module.exports = {
 										};
 
 										sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-											logger.warn('alors update avoir ', updated);
+											//logger.warn('alors update avoir ', updated);
 											if (err !== null && err !== undefined) {
 												logger.error(err);
 												return res.send({'err': "Erreur de l'update client", 'commande': null});
@@ -566,7 +568,7 @@ module.exports = {
 					logger.error(err);
 					return res.send({'err': "Erreur de récupération de la commande", 'commande': null});
 				}
-				logger.util(fCom);
+				//logger.util(fCom);
 				return res.send({'err': null,'commande': fCom});
 			});
 		});
@@ -600,8 +602,7 @@ module.exports = {
 					logger.error(err);
 					return res.send({'err': "Erreur de récupération de la commande", 'commande': null});
 				}
-				logger.util(fCom);
-				logger.util(fCom);
+			
 				var origine = { 'id': req.body.id_client};
 				var cible = { 
 					'current_avoir': avoir,
@@ -609,7 +610,7 @@ module.exports = {
 				};
 				
 				sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-					logger.warn('alors update avoir ', updated);
+					//logger.warn('alors update avoir ', updated);
 					if (err !== null && err !== undefined) {
 						logger.error(err);
 						return res.send({'err': "Erreur de l'update client", 'commande': null});
@@ -643,7 +644,7 @@ module.exports = {
 
 		sails.models.commandes.find({'id': parseInt(idCmd)}).exec(function (err, recup) {
 			var oldStatus = recup[0].status;
-			logger.util('updated : ', recup);
+			
 			//quand status de livraison avec old=crea => on destcoke
 			if ((oldStatus == 1 || oldStatus == 2 || oldStatus == 4) ) {
 				var origine = {
@@ -658,9 +659,7 @@ module.exports = {
 					'paiement': paiement,
 					'dt_paiement': dt_paiement
 				};
-				logger.error("source : ", origine);	
 				
-				logger.error("cible : ", target);
 				var lacommande = {
 					'id_commande' : req.body.id_commande
 				};	
@@ -690,7 +689,7 @@ module.exports = {
 									'current_debit': debit
 								};
 								sails.models.clients.update(origine, cible).exec(function creaStat(err,updated) {
-									logger.warn('alors update avoir ', updated);
+								//	logger.warn('alors update avoir ', updated);
 									if (err !== null && err !== undefined) {
 										logger.error(err);
 										return res.send({'err': "Erreur de l'update client", 'commande': null});

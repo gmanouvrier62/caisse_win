@@ -36,11 +36,11 @@ module.exports = {
       //Attention dans ce cas il faut ajouter 1 au regroupement du tableau
       //pour la problématique d'ajout d'une dizaine
       var tmp = parseInt(tb.join(""));
-      logger.warn('avant calcul ', tmp);
+     
       var offset = 10 - tb[tb.length-1];
       tmp += offset;
       step1 = tmp.toString();
-      logger.warn("1299 + 1", step1);
+     
       tb = [];
       for(var c = 0; c < step1.length; c++) tb.push(step1[c]);
       
@@ -49,12 +49,13 @@ module.exports = {
     return parseInt(resultat) / 100;
   },
   getCommandes: function(req, callback) {
-         
+    logger.warn("ds models commandes getCommandes");     
     var status = null;
     var dtDebut = null;
     var dtFin = null;
     var id_client = null;
     var tbCritere = [];
+    var critere_tri = "";
     if(req.body !== null && req.body !== undefined) {
       if (req.body.status !== null && req.body.status !== undefined)
         tbCritere.push("st.id in (" + req.body.status.join(',') + ")");
@@ -65,9 +66,10 @@ module.exports = {
           tbCritere.push("dt_livraison between '" + req.body.dtDebut + " 00:00:00' and '" + req.body.dtFin + " 23:59:59'");
         else
           tbCritere.push("dt_livraison between '" + req.body.dtDebut + " 00:00:00' and '" + req.body.dtDebut + " 23:59:59'");
-      }
+      } else
+        critere_tri = " order by createdAt desc";
     }
-    
+    critere_tri = " order by createdAt desc";
     var sql = "select c.id as idc, ";
       sql += "c.status as id_status, c.createdAt createdAt, ";
       sql += "st.nom_status as nom_status, ";
@@ -83,8 +85,8 @@ module.exports = {
       sql += "inner join clients clt on c.id_client = clt.id ";
       sql += "inner join status_commande st on st.id = c.status where ";
       sql += tbCritere.join(' and ');
-
-    //logger.warn('go requete: ', sql);
+      sql += critere_tri;
+    logger.warn('go requete: ', sql);
     sails.models.commandes.query(sql, function(err, datas){
       if (err !== null && err !== undefined) return callback(err, null);
       var retour = [];
