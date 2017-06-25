@@ -358,13 +358,14 @@ $(function(){
     });
     $('body').on('click', 'button.action-okpr', function (event) {
         //On a choisi un produit 
-        //alert($("#poids").val());
+       // alert($("#poids").val());
         var qte;
-        if ($(this).data('condi') == 'kilo') {
+        if ($(this).data('condi') === 'kilo') {
           //if  ( $("#poids").val() !="0") {
             //alert("bien sup a 0 : " + parseFloat( $("#poids").val() ));
-            qte = parseFloat( $("#poids").val() );
-            
+            var lepoid= "#poids_" + $(this).data('id');
+            qte = parseFloat( $(lepoid).val() );
+           // alert("qte : " + qte);
           //} else {
             //qte = $(this).parent().parent().find(".fontQte").html();
           //}

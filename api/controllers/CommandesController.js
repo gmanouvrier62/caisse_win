@@ -348,7 +348,7 @@ module.exports = {
 		});
 	},
 	addormodify: function (req, res) {
-		//logger.info("DANS ADD commandes : ", req.body.qte);
+		logger.info("DANS ADD commandes : ", req.body.qte);
 		var idCmd = req.body.id_commande;
 		var lignes = req.body.lignes;
 		var id_client = req.body.id_client;
@@ -409,7 +409,7 @@ module.exports = {
 								idr: resultPr[0].id_type
 								
 							};
-							//logger.util("ligne aant find or create : ", ligne);
+							logger.util("ligne aant find or create : ", ligne);
 							sails.models.produits.rayonExiste(null,ligne.id_produit, function(err) { 
 								sails.models.cmd_pr.findOrCreate(ligne,ligne).exec(function creaStat(err,created){
 									if(err !== null && err !== undefined) return res.send({'err':"Erreur d'insertion d'un rpoduit dans une commande " + err, 'commande': null});
@@ -447,7 +447,7 @@ module.exports = {
 			});
 		} else {
 			//C'est une modif de commande existante
-			//logger.warn("cmd? modify : ", idCmd);
+			logger.warn("cmd? modify : ", idCmd);
 			if(parseInt(idCmd)>0) {
 				var oldC= {
 					'id': parseInt(idCmd)

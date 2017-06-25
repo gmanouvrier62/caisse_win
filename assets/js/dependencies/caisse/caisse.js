@@ -26,9 +26,9 @@ $.prototype.setDataTable = function(l_table,id) {
             {
 	            "render": function ( data, type, row ) {
 	            	var html = ""; 
-					if(row[11] != "0") {
+					if(row[11] === "kilo") {
 						//prix au kilo
-						html = "<input type='text' id='poids' value='0' class='fontQte'>&nbsp;<b>KG</b>";
+						html = "<input type='text' id='poids_" + row[0] + "' value='0' class='fontQte'>&nbsp;<b>KG</b>";
 						var blDatas = '" data-id="' + row[0] + '"' + ' data-rayon="' + row[2] + '"' + ' data-ref="' + row[3] + '" data-condi="kilo"';
 	                    html += '<button class="btn btn-success btn-xs btn-action action-okpr" style="font-size: 13px;" title="valider" ' + blDatas + '><i class="fa fa-thumbs-o-up"></i></button>';
 
