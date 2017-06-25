@@ -402,7 +402,7 @@ module.exports = {
 								promo:  resultPr[0].promo,
 								nom:  resultPr[0].nom,
 								icone:  resultPr[0].icone,
-								tionnement:  resultPr[0].tionnement,
+								conditionnement:  resultPr[0].conditionnement,
 								id_fournisseur:  resultPr[0].id_fournisseur,
 								idr: resultPr[0].id_type
 								
@@ -487,7 +487,7 @@ module.exports = {
 									promo:  resultPr[0].promo,
 									nom:  resultPr[0].nom,
 									icone:  resultPr[0].icone,
-									tionnement:  resultPr[0].tionnement,
+									conditionnement:  resultPr[0].conditionnement,
 									id_fournisseur:  resultPr[0].id_fournisseur,
 									idr: resultPr[0].id_type
 								};
