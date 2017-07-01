@@ -233,7 +233,7 @@ $(function(){
                    var cligne = self.data('ligne');
                   
                    var nqte = $("#nouvelle_qte").val();
-                   alert('ok qte = ' + nqte);
+                  // alert('ok qte = ' + nqte);
                  //alert("/commandes/modification/" + numC + "/" + cligne);
                   $.post("/commandes/modification", {'idl': cligne, 'idc': numC, 'nqte' : nqte}, function(leretour) {
                     //redirection

@@ -195,7 +195,29 @@
           $('body').on('change', 'input.price', function (event) {
             //Application des regles de calculs
             var currentChanged = $(this).attr('id');
-            console.log(currentChanged);
+            console.log("dans on change");
+            if (currentChanged == 'tva') {
+              if($("#ttc_externe").val() != '') 
+                $("#pht").val(calculHT( $("#ttc_externe").val(), $("#tva").val() ));
+              if($("#pht").val() != '' && $("#tx_com").val() != '')
+                 $("#ttc_vente").val(calculPV( $("#pht").val(), $("#tx_com").val(), $("#tva").val() ));
+            }
+            if (currentChanged == 'ttc_externe') {
+              if($("#tva").val() != '') {
+                $("#pht").val(calculHT( $("#ttc_externe").val(), $("#tva").val() ));
+                if ($("#tx_com").val() != '') 
+                  $("#ttc_vente").val(calculPV( $("#pht").val(), $("#tx_com").val(), $("#tva").val() ));
+              }
+            }
+            if (currentChanged == 'tx_com') {
+              if($("#pht").val() != '' && $("#tva").val() != '')
+                 $("#ttc_vente").val( calculPV( $("#pht").val(), $("#tx_com").val(), $("#tva").val() ));
+            }
+          });
+           $('body').on('blur', 'input.price', function (event) {
+            //Application des regles de calculs
+            var currentChanged = $(this).attr('id');
+            console.log("dans on blur");
             if (currentChanged == 'tva') {
               if($("#ttc_externe").val() != '') 
                 $("#pht").val(calculHT( $("#ttc_externe").val(), $("#tva").val() ));

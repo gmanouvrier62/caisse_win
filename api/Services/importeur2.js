@@ -6,6 +6,7 @@ var sleep = require('system-sleep');
 var Immutable = require('immutable');
 var mkdirp = require('mkdirp');
 var Curl = require( 'node-libcurl' ).Curl;
+var url = require('url');
 var importProduits = require("./import_produits.js");
 var flagPromos = require("./flag_promos.js");
 //var http = require('http').Server(app);
@@ -128,82 +129,93 @@ var lCurl_promos = function (ccurl, l_url, self) {
     return 0;
 };
 
-var lCurl = function(ccurl, l_url, self) {
-	ccurl.setOpt( 'URL', l_url );
-    ccurl.setOpt( 'FOLLOWLOCATION', true );
-    //ccurl.setOpt( 'SSL_VERIFYPEER', false);	
-    ccurl.on( 'end', function( statusCode, body, headers ) {
-        logger.info('pour' + l_url);     
-        logger.info( statusCode );
-        logger.info( '---' );
-        logger.info( body.length );
-        logger.info( '---' );
-        logger.info( this.getInfo( 'TOTAL_TIME' ) );
-       
-        // ctl00_main_ctl01_pnlElementProduitsPromos
-        var tb = body.split("('ctl00_main_ctl05_pnlElementProduit',");
-        if(tb.length > 0) {
-            var part2 = tb[1];
-            if(part2 !== null && part2 !== undefined) {
-	            var tb2 = part2.split('Utilitaires.widget.initOptions');
-	            var leJSON = tb2[0];
-	            leJSON = leJSON.substring(0,leJSON.length-2);
-	            var tbFn = l_url.split('rayon-');
-	            var fn = tbFn[1] + '.json';
-	     
-	            fs.writeFile(sails.config.importProductsFolder + fn, leJSON, function (err) {
-	                if (err) {
-	                  logger.error("pas bon pour " + l_url);
-	                  self.nbErr ++;
-	                  self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
-	                  if (self.sockets !== null && self.sockets !== undefined) {
-	                  		self.sockets.emit("error", self.pct_ko, self.pct_ok, l_url);
-	                  }	
-	                  self.emit('pasbon');
-	                } else {
-	                    logger.info("ok ducky");
-	                    self.nbOk ++;
-	                    self.pct_ok = parseInt( (self.nbOk*100)/(self.tbLiens.length-1) );
-	                    
-                       	logger.warn('va emttre un completed ', "");
-                    	if (self.sockets !== null && self.sockets !== undefined) {
-                    		self.sockets.emit("completed",self.pct_ko, self.pct_ok);	
-                    	}
-                    	self.emit('completed');
-	                    
-	                }
+var lCurl = function(l_url, self) {
+   var options = {
+    host: url.parse(l_url).host,
+    port: 80,
+    path: url.parse(l_url).pathname
+   };	
 
-	                if(self.pointeur == self.tbLiens.length-1) {
-                    	if (self.sockets !== null && self.sockets !== undefined) {
-                    		self.sockets.emit("json_completed");
-                    	}
-                    	logger.error("!!!!!!!!!OK FINI!!!!!!!!!avant import db");
-                    	importProduits(self,function(result) {
-                    		self.emit('all_completed');
-                    		if (self.sockets !== null && self.sockets !== undefined) {
-                    			self.sockets.emit("all_completed");
-                    		}
-                    	});
-	                } 
-	            });
+   var req = http.request(options, function(res) {
+        
+   		 console.log('STATUS: ' + res.statusCode);
+		 console.log('HEADERS: ' + JSON.stringify(res.headers));
+		 res.setEncoding('utf8');
+		 res.on('data', function (body) {
+
+
+       		 logger.info('pour' + l_url);     
+	        //logger.info( statusCode );
+	        
+	        // ctl00_main_ctl01_pnlElementProduitsPromos
+	        var tb = body.split("('ctl00_main_ctl05_pnlElementProduit',");
+	        if(tb.length > 0) {
+	            var part2 = tb[1];
+	            if(part2 !== null && part2 !== undefined) {
+		            var tb2 = part2.split('Utilitaires.widget.initOptions');
+		            var leJSON = tb2[0];
+		            leJSON = leJSON.substring(0,leJSON.length-2);
+		            var tbFn = l_url.split('rayon-');
+		            var fn = tbFn[1] + '.json';
+		     
+		            fs.writeFile(sails.config.importProductsFolder + fn, leJSON, function (err) {
+		                if (err) {
+		                  logger.error("pas bon pour " + l_url);
+		                  self.nbErr ++;
+		                  self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
+		                  if (self.sockets !== null && self.sockets !== undefined) {
+		                  		self.sockets.emit("error", self.pct_ko, self.pct_ok, l_url);
+		                  }	
+		                  self.emit('pasbon');
+		                } else {
+		                    logger.info("ok ducky");
+		                    self.nbOk ++;
+		                    self.pct_ok = parseInt( (self.nbOk*100)/(self.tbLiens.length-1) );
+		                    
+	                       	logger.warn('va emttre un completed ', "");
+	                    	if (self.sockets !== null && self.sockets !== undefined) {
+	                    		self.sockets.emit("completed",self.pct_ko, self.pct_ok);	
+	                    	}
+	                    	self.emit('completed');
+		                    
+		                }
+
+		                if(self.pointeur == self.tbLiens.length-1) {
+	                    	if (self.sockets !== null && self.sockets !== undefined) {
+	                    		self.sockets.emit("json_completed");
+	                    	}
+	                    	logger.error("!!!!!!!!!OK FINI!!!!!!!!!avant import db");
+	                    	importProduits(self,function(result) {
+	                    		self.emit('all_completed');
+	                    		if (self.sockets !== null && self.sockets !== undefined) {
+	                    			self.sockets.emit("all_completed");
+	                    		}
+	                    	});
+		                } 
+		            });
+		        } else {
+		        	if (self.sockets !== null && self.sockets !== undefined) {
+		        		self.nbErr ++;
+		        		self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
+	    				self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
+		    		}
+		    		self.emit('pasbon');		
+		        }
 	        } else {
+	        	//visiblement la page ne matche pas avec les élémets html à trouver
 	        	if (self.sockets !== null && self.sockets !== undefined) {
 	        		self.nbErr ++;
 	        		self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
-    				self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
+	    			self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
 	    		}
-	    		self.emit('pasbon');		
+	    		self.emit('pasbon');	
 	        }
-        } else {
-        	//visiblement la page ne matche pas avec les élémets html à trouver
-        	if (self.sockets !== null && self.sockets !== undefined) {
-        		self.nbErr ++;
-        		self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
-    			self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
-    		}
-    		self.emit('pasbon');	
-        }
-        this.close();
+	        this.close();
+	    
+		});
+
+
+
     });
     
     ccurl.on( 'error', function(err) {
@@ -222,7 +234,7 @@ var lCurl = function(ccurl, l_url, self) {
 };
 
 
-function importeur(dest) {
+function importeur2(dest) {
 	http.listen(1112, function(){
 	  console.log('listening on *:1112');
 	});
@@ -342,26 +354,27 @@ function importeur(dest) {
 		
 };
 
-importeur.prototype.getNext = function() {
+importeur2.prototype.getNext = function() {
 	this.pointeur += 1;
 	if (this.import_type == "") {
 		this.currentLink = this.tbLiens[this.pointeur];
-		var curl = new Curl();
+		//0var curl = new Curl();
 	    var full_url = this.tbLiens[this.pointeur];
     } else {
-    	this.currentLink = this.tbPromos[this.pointeur];
-		var curl = new Curl();
-	    var full_url = this.tbPromos[this.pointeur];
+    	//this.currentLink = this.tbPromos[this.pointeur];
+		//var curl = new Curl();
+	    //var full_url = this.tbPromos[this.pointeur];
     }
 
     if(full_url !== null && full_url !== undefined) {
     	logger.warn("pour ", full_url);
     	if (this.import_type == "")
-    		lCurl(curl, full_url, this);
-    	else 
-    		lCurl_promos(curl, full_url, this);
+    		lCurl(full_url, this);
+    	else {
+    		//lCurl_promos(full_url, this);
+    	}
 	}
 };
 
-importeur.prototype.__proto__ = events.EventEmitter.prototype;
-module.exports=importeur;
+importeur2.prototype.__proto__ = events.EventEmitter.prototype;
+module.exports=importeur2;

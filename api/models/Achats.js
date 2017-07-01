@@ -11,7 +11,7 @@ module.exports = {
 
     id_commande: { type: 'int' },
 
-    qte: {type: 'int'},
+    qte: {type: 'decimal'},
 
     raison: {type: 'string'},
 
@@ -82,6 +82,8 @@ module.exports = {
 					ins.qte = ajustement;
 					ins.modifiedAt = moment().format("YYYY-MM-DD HH:mm:ss");
 					ins.raison = 'remise à 0 aprés solde négatif';
+					logger.warn("normalement avant err");
+					logger.warn("enr= ", ins);
 					sails.models.achats.addStock(ins,function(err, crea2){
 						
 					});
