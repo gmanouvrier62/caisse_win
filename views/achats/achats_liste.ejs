@@ -157,17 +157,17 @@ var tIndex = 0;
     });
     $("#print").click(function(){
         var st = "style='border: 1px solid black; padding: 2px; margin-left:3px;margin-right:3px'";
-        var template = "<table " + st + " id='tblPrint'><thead><tr><th>Ref</th><th>Désignation</th><th>Quantité</th></tr></thead><tbody><tr><td></td><td></td><td></td></tr>";
+        var template = "<table " + st + " id='tblPrint'><thead><tr><th>Ref</th><th>Désignation</th><th>Quantité</th><th>TTC</th><th>TVA</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr>";
         var ligne = "";
-        console.log("dans print avant foreach des dispo");
         $(".ftDispo").each(function(){
-            console.log("ct : ", parseInt($(this).html()));
-            //if( $(this).html() != 'null' && parseInt($(this).html()) > 0 ) {
+            if( $(this).html() != 'null' && parseInt($(this).html()) > 0 ) {
                 var idp = $(this).data('id');
                 var nom = $(this).parent().parent().find('.prNom').html();
                 var qte = $(this).data('qte');
+                var ttc = $(this).data('ttc') * qte;
+                var tva = $(this).data('tva') * qte;
                 ligne += "<tr ><td " + st + ">" + idp + "</td><td " + st + ">" + nom + "</td><td " + st + ">" + qte + "</td></tr>";
-            //} 
+            } 
         });
         impression(template + ligne + "</table>");
     });
