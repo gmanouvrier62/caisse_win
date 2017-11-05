@@ -17,6 +17,7 @@ J'ai un tb de liens(pointeur)
 Je lance getNext
 Lors de la fin de traitement il retourne un event error 1 2 ou completed
 */
+
 var lCurl_promos = function (ccurl, l_url, self) {
 	ccurl.setOpt( 'URL', l_url );
     ccurl.setOpt( 'FOLLOWLOCATION', true );
@@ -131,20 +132,23 @@ var lCurl_promos = function (ccurl, l_url, self) {
 var lCurl = function(ccurl, l_url, self) {
 	ccurl.setOpt( 'URL', l_url );
     ccurl.setOpt( 'FOLLOWLOCATION', true );
-    //ccurl.setOpt( 'SSL_VERIFYPEER', false);	
+    ccurl.setOpt( 'SSL_VERIFYPEER', false);	
     ccurl.on( 'end', function( statusCode, body, headers ) {
         logger.info('pour' + l_url);     
-        logger.info( statusCode );
+        logger.info( 'st code ' + statusCode );
         logger.info( '---' );
-        logger.info( body.length );
+        logger.info( 'body length : ' + body.length );
         logger.info( '---' );
-        logger.info( this.getInfo( 'TOTAL_TIME' ) );
+        logger.info( 'les infos : ' + this.getInfo( 'TOTAL_TIME' ) );
        
         // ctl00_main_ctl01_pnlElementProduitsPromos
-        var tb = body.split("('ctl00_main_ctl05_pnlElementProduit',");
+
+        var tb = body.split("pnlElementProduit',");
         if(tb.length > 0) {
             var part2 = tb[1];
+            //logger.warn("tb : ", tb);
             if(part2 !== null && part2 !== undefined) {
+            	//logger.warn("part2 : ", part2);
 	            var tb2 = part2.split('Utilitaires.widget.initOptions');
 	            var leJSON = tb2[0];
 	            leJSON = leJSON.substring(0,leJSON.length-2);
@@ -153,12 +157,14 @@ var lCurl = function(ccurl, l_url, self) {
 	     
 	            fs.writeFile(sails.config.importProductsFolder + fn, leJSON, function (err) {
 	                if (err) {
+	                  logger.error("erreur : ", err);
 	                  logger.error("pas bon pour " + l_url);
 	                  self.nbErr ++;
 	                  self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
 	                  if (self.sockets !== null && self.sockets !== undefined) {
 	                  		self.sockets.emit("error", self.pct_ko, self.pct_ok, l_url);
 	                  }	
+	                  logger.error ("pb ecriture fichier");
 	                  self.emit('pasbon');
 	                } else {
 	                    logger.info("ok ducky");
@@ -192,6 +198,8 @@ var lCurl = function(ccurl, l_url, self) {
 	        		self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
     				self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
 	    		}
+	    		logger.error("pas de split");
+	    		logger.warn("obj connect : ", self.sockets);
 	    		self.emit('pasbon');		
 	        }
         } else {
@@ -201,6 +209,7 @@ var lCurl = function(ccurl, l_url, self) {
         		self.pct_ko = parseInt( (self.nbErr*100)/(self.tbLiens.length-1) );
     			self.sockets.emit("bad", self.pct_ko, self.pct_ok, l_url);
     		}
+    		logger.error("pas de match");
     		self.emit('pasbon');	
         }
         this.close();

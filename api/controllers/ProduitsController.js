@@ -62,19 +62,19 @@ module.exports = {
 		}
 	},
 	import: function (req, res) {
-		
-		//importProduits(function(result) {
+		/*
+		importProduits(function(result) {
 
-		//	return res.send(result);
-		//});
-		
+			return res.send(result);
+		});
+		*/
 			
 	},
 	prepare_import_json: function(req, res) {
 		var imp = new importeur();
 		imp.getNext();
 		imp.on("pasbon", function(){
-			logger.warn("catch error1", imp.currentLink, " pointeur ", this.pointeur);
+			logger.warn("catch error1 prepa", imp.currentLink, " pointeur ", this.pointeur);
 			imp.getNext();
 		});
 		
@@ -93,6 +93,7 @@ module.exports = {
 	},
 	prepare_import_json_promos: function(req, res) {
 		var sql = "update produits set promo=0";
+		logger.warn("ok dans prepare_import_json");
 		sails.models.produits.query(sql, function(err, results){
 			if (err !== null & err !== undefined) {
 				logger.error(err);
